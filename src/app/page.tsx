@@ -1,8 +1,8 @@
+"use client";
+
 import { Fragment } from "react";
-import Navbar from "./components/navbar";
-import { Button } from "@nextui-org/react";
-import Link from "next/link";
-import Icons from "./components/icons";
+import Navbar from "../components/navbar";
+import Icons from "../components/icons";
 import { ArrowRight } from "lucide-react";
 import clsx from "clsx";
 import Image from "next/image";
@@ -14,7 +14,8 @@ import {
   MenuBoard,
   Stickynote,
 } from "iconsax-react";
-import Footer from "./components/footer";
+import Footer from "../components/footer";
+import AuthButton from "../components/auth-button";
 
 export default function Home() {
   return (
@@ -27,7 +28,7 @@ export default function Home() {
         }}
       >
         <Navbar />
-        <div className="space-y-10 pt-24">
+        <div className="space-y-10 pt-24 text-center">
           <Image
             src="/logo.png"
             alt="eFileBOI"
@@ -39,29 +40,7 @@ export default function Home() {
           <h2 className="text-5xl font-bold max-w-2xl mx-auto text-center text-balance">
             Streamline Your Compliance Journey With eFileBOI
           </h2>
-          <div className="space-x-4 flex justify-center">
-            <Button
-              as={Link}
-              href="/sign-up"
-              radius="full"
-              color="warning"
-              className="min-w-52 text-white"
-              size="lg"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="w-6 h-6" />
-            </Button>
-            <Button
-              radius="full"
-              variant="bordered"
-              color="warning"
-              className="min-w-52 text-black"
-              size="lg"
-            >
-              <Icons.Google className="w-6 h-6" />
-              <span>Sign in with Google</span>
-            </Button>
-          </div>
+          <AuthButton type="large" />
 
           <div className="grid grid-cols-5 gap-5 max-w-7xl mx-auto w-[98%] !mt-28">
             <HeroCard

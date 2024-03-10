@@ -1,14 +1,8 @@
-"use client";
-
-import { Button } from "@nextui-org/react";
 import React from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import AuthButton from "./auth-button";
 
 const Navbar = () => {
-  const { push } = useRouter();
-  const pathname = usePathname();
-
   return (
     <div
       className="flex items-center justify-between max-w-7xl mx-auto w-[98%] rounded-full px-2 py-2 pl-6"
@@ -32,29 +26,7 @@ const Navbar = () => {
         })}
       </ul>
 
-      <div className="space-x-2">
-        <Button
-          onClick={() => {
-            if (pathname === "/sign-up") return;
-            push("/sign-up");
-          }}
-          radius="full"
-          variant="flat"
-        >
-          Signup
-        </Button>
-        <Button
-          onClick={() => {
-            if (pathname === "/login") return;
-            push("/login");
-          }}
-          radius="full"
-          color="warning"
-          className="text-white"
-        >
-          Login
-        </Button>
-      </div>
+      <AuthButton type="mininal" />
     </div>
   );
 };

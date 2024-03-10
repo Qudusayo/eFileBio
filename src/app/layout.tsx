@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
-import { useEffect } from "react";
 
 const plus_jakarta_sans = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
@@ -13,18 +12,13 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-  auth,
 }: Readonly<{
   children: React.ReactNode;
-  auth: React.ReactNode;
 }>) {
   return (
     <html lang="en">
       <body className={plus_jakarta_sans.className}>
-        <Providers>
-          {children}
-          {auth}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
