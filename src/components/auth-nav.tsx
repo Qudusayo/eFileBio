@@ -1,22 +1,18 @@
 "use client";
 
+import { useAuthContext } from "@/app/context/auth-context";
 import { User } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
 import { Notification, Setting } from "iconsax-react";
-import { useSession } from "next-auth/react";
 
 const AuthNav = () => {
-  const { data: session } = useSession();
-
-  console.log(session);
-
-  if (!session) return null;
+  const authData = useAuthContext();
 
   return (
     <div className="flex items-center justify-between px-4 py-3 bg-white">
       <div className="leading-tight">
         <span className="text-sm">Welcome back</span>
-        <h2 className="text-xl font-semibold">{session.user?.name}</h2>
+        <h2 className="text-xl font-semibold">{authData!.name}</h2>
       </div>
       <div className="flex items-center gap-4">
         <Button
@@ -36,12 +32,10 @@ const AuthNav = () => {
           <Setting size="20" color="#525252" variant="Bold" />
         </Button>
         <User
-          name={
-            <span className="text-sm font-semibold">{session.user?.name}</span>
-          }
-          description={session.user?.email}
+          name={<span className="text-sm font-semibold">{authData!.name}</span>}
+          description={authData!.email}
           avatarProps={{
-            src: session.user?.image ?? undefined,
+            src: authData!.profileImage,
           }}
         />
       </div>

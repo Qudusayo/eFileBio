@@ -28,7 +28,7 @@ const Sidebar = () => {
               title="Dashboard"
               href="/dashboard"
               icon={Category}
-              active={pathname === "/dashboard"}
+              active={pathname.startsWith("/dashboard")}
             />
           </li>
           <li>

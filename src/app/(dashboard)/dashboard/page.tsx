@@ -1,34 +1,41 @@
-import { Add } from "iconsax-react";
+import prisma from "@/lib/db";
+import { getServerSession } from "next-auth";
+import { redirect } from "next/navigation";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { Business } from "@prisma/client/edge";
+import BusinessCard from "./components/business-card";
+import { CreateBusinessModal } from "./components/create-business-modal";
 
-const Dashboard = () => {
-  return (
-    <div className="flex flex-col gap-4 h-full">
-      <div>
-        <h2 className="text-2xl font-semibold">Dashboard</h2>
-        <p>
-          Excepteur sint occaecat cupidatat non proident, sunt in culpa qui
-          officia deserunt mollit anim id est laborum.
-        </p>
-      </div>
-      <div className="bg-white flex-1 rounded-2xl p-6">
-        <div className="grid grid-cols-3 gap-6">
-          <BusinessCard />
-        </div>
-      </div>
-    </div>
-  );
-};
+const Dashboard = async () => {
+  const businesses = async () => {
+    const session = await getServerSession(authOptions);
 
-const BusinessCard = () => {
+    if (!session || !session.user || !session.user.email) {
+      return redirect("/");
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return redirect("/");
+    }
+
+    return await prisma.business.findMany({
+      where: {
+        ownerId: user.id,
+      },
+    });
+  };
+  const userBusinesses = await businesses();
+
   return (
-    <div className="bg-[#f59f0b30] rounded-xl border border-dashed border-[#F59E0B] py-8 px-5 cursor-pointer">
-      <Add size="100" color="#F59E0B" className="block mx-auto mb-4" />
-      <div className="text-center space-y-2">
-        <h2 className="font-semibold">Business Card</h2>
-        <p className="text-sm text-balance">
-          Create a Business to manage eFiling with our help
-        </p>
-      </div>
+    <div className="grid grid-cols-3 gap-6">
+      <CreateBusinessModal />
+      {userBusinesses.map((business: Business) => (
+        <BusinessCard key={business.id} business={business} />
+      ))}
     </div>
   );
 };
