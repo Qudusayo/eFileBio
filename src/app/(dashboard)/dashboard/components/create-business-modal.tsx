@@ -53,7 +53,7 @@ export function CreateBusinessModal() {
           <Add
             size="100"
             color="#F59E0B"
-            className="block mx-auto mb-4 h-24 w-24"
+            className="block mx-auto mb-4 h-16 w-16"
           />
           <div className="text-center space-y-2">
             <h2 className="font-semibold text-xl">Create a Business</h2>

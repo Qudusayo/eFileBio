@@ -69,3 +69,46 @@ export async function createBusiness(prevState: any, formData: FormData) {
     created: true,
   };
 }
+
+export async function createForm(data: { businessId: string }) {
+  const session = await getServerSession(authOptions);
+
+  const { businessId } = data;
+
+  if (!session || !session.user || !session.user.email) {
+    return redirect("/");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email: session.user.email },
+  });
+
+  if (!user) {
+    return redirect("/");
+  }
+
+  if (!businessId) {
+    return new Response("Business ID is required", {
+      status: 400,
+    });
+  }
+
+  const business = await prisma.business.findUnique({
+    where: { id: businessId },
+  });
+
+  if (!business) {
+    return new Response("Business not found", {
+      status: 404,
+    });
+  }
+
+  const newForm = await prisma.form.create({
+    data: {
+      businessId: business.id,
+    },
+  });
+
+  revalidatePath(`/dashboard/${businessId}`);
+  redirect(`/dashboard/${businessId}/${newForm.id}`);
+}

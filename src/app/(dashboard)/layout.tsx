@@ -13,7 +13,9 @@ export default function DashboardLayout({
         <Sidebar />
         <div className="bg-[#FAFAFA] h-full flex-1 flex flex-col">
           <AuthNav />
-          <div className="px-4 py-5 overflow-y-auto flex-1">{children}</div>
+          <div className="px-4 py-5 overflow-y-auto flex-1 mb-8">
+            {children}
+          </div>
         </div>
       </section>
     </AuthProvider>

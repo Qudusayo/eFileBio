@@ -37,7 +37,7 @@ model Session {
 model User {
   id            String     @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String     @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -66,11 +66,10 @@ model Business {
 }
 
 model Form {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  business    Business @relation(fields: [businessId], references: [id])
-  businessId  String
+  id         String   @id @default(cuid())
+  version    Int      @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  business   Business @relation(fields: [businessId], references: [id])
+  businessId String
 }

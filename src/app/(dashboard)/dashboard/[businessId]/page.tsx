@@ -2,6 +2,9 @@ import Link from "next/link";
 import { ArrowLeft } from "iconsax-react";
 import { Avatar, Button } from "@nextui-org/react";
 import prisma from "@/lib/db";
+import { redirect } from "next/navigation";
+import { Business, Form } from "@prisma/client";
+import FormCard from "../components/form-card";
 
 const page = async ({ params }: { params: { businessId: string } }) => {
   const { businessId } = params;
@@ -11,20 +14,35 @@ const page = async ({ params }: { params: { businessId: string } }) => {
       where: {
         id: businessId,
       },
+
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        logo: true,
+        forms: {
+          select: {
+            id: true,
+            updatedAt: true,
+            version: true,
+          },
+        },
+      },
     });
 
     return res;
   }
-
   const business = await getBusiness();
 
   if (!business) {
-    return <div>Business not found</div>;
+    return redirect("/dashboard");
   }
 
+  const businessForms: Form[] = business.forms;
+
   return (
-    <div>
-      <div className="bg-[#FAFAFA] border border-[#F5F5F5] rounded-2xl flex items-center justify-between p-3">
+    <div className="space-y-4">
+      <div className="bg-[#FAFAFA] border border-[#F5F5F5] rounded-xl flex items-center justify-between p-3">
         <div className="flex gap-4 w-fit">
           <Avatar
             src={business.logo ?? ""}
@@ -45,6 +63,19 @@ const page = async ({ params }: { params: { businessId: string } }) => {
         >
           <ArrowLeft />
         </Button>
+      </div>
+      <div>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {businessForms.map((form) => (
+            <FormCard
+              key={form.id}
+              formId={form.id}
+              businessId={businessId}
+              version={form.version}
+              updatedAt={form.updatedAt}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
