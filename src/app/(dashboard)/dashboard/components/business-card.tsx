@@ -5,17 +5,17 @@ import Link from "next/link";
 const BusinessCard = ({ business }: { business: Business }) => {
   return (
     <Link
-      className="bg-[#FAFAFA] rounded-xl py-8 px-5 cursor-pointer space-y-8 border border-[#F5F5F5]"
+      className="cursor-pointer space-y-8 rounded-xl border border-[#F5F5F5] bg-[#FAFAFA] px-5 py-8"
       href={`/dashboard/${business.id}`}
     >
       <Avatar
         src={business.logo ?? ""}
-        className="h-16 w-16 text-large !rounded-md !block mx-auto !bg-transparent"
+        className="mx-auto !block h-16 w-16 !rounded-md !bg-transparent text-large"
       />
 
-      <div className="text-center space-y-2">
-        <h2 className="font-semibold text-xl">{business.name}</h2>
-        <p className="text-sm text-center text-[#525252]">
+      <div className="space-y-2 text-center">
+        <h2 className="text-xl font-semibold">{business.name}</h2>
+        <p className="text-center text-sm text-[#525252]">
           {business.description}
         </p>
       </div>

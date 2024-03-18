@@ -15,14 +15,14 @@ const FormCard = ({
 }) => {
   return (
     <Link
-      className="bg-[#FAFAFA] rounded-xl py-8 px-5 cursor-pointer space-y-8 border border-[#F5F5F5]"
+      className="cursor-pointer space-y-8 rounded-xl border border-[#F5F5F5] bg-[#FAFAFA] px-5 py-8"
       href={`/dashboard/${businessId}/${formId}`}
     >
-      <Icons.SystemUpdate className="h-20 w-20 text-large !rounded-md !block mx-auto !bg-transparent" />
+      <Icons.SystemUpdate className="mx-auto !block h-20 w-20 !rounded-md !bg-transparent text-large" />
 
-      <div className="text-center space-y-2">
-        <h2 className="font-semibold text-xl">BOIR Version {version}</h2>
-        <p className="text-sm text-center text-[#525252]">
+      <div className="space-y-2 text-center">
+        <h2 className="text-xl font-semibold">BOIR Version {version}</h2>
+        <p className="text-center text-sm text-[#525252]">
           Last Updated -{" "}
           {updatedAt
             .toLocaleDateString("en-US", {

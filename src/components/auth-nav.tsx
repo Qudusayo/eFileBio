@@ -9,7 +9,7 @@ const AuthNav = () => {
   const authData = useAuthContext();
 
   return (
-    <div className="flex items-center justify-between px-4 py-3 bg-white">
+    <div className="flex items-center justify-between bg-white px-4 py-3">
       <div className="leading-tight">
         <span className="text-sm">Welcome back</span>
         <h2 className="text-xl font-semibold">{authData!.name}</h2>

@@ -4,8 +4,8 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <div className="bg-black text-white py-20 relative">
-      <div className="max-w-7xl mx-auto w-[98%] space-y-8">
+    <div className="relative bg-black py-20 text-white">
+      <div className="mx-auto w-[98%] max-w-7xl space-y-8">
         <ul className="flex items-center gap-8">
           {["Our traning courses", "Financing", "Our Services", "Blog"].map(
             (item, index) => {
@@ -14,7 +14,7 @@ const Footer = () => {
                   <Link href="/">{item}</Link>
                 </li>
               );
-            }
+            },
           )}
         </ul>
         <Divider className="my-4 bg-[#ffffff45]" />
@@ -24,8 +24,8 @@ const Footer = () => {
           <QuickInfo title="Email" description="Example@gmail.com" />
         </div>
       </div>
-      <div className="absolute inset-0 h-fit m-auto -top-6 max-w-7xl w-[98%]">
-        <div className="bg-[#FBBF24] flex items-center gap-3 w-fit p-2 px-4 rounded-full ml-auto">
+      <div className="absolute inset-0 -top-6 m-auto h-fit w-[98%] max-w-7xl">
+        <div className="ml-auto flex w-fit items-center gap-3 rounded-full bg-[#FBBF24] p-2 px-4">
           <a href="#" target="_blank" rel="">
             <Facebook fill="white" stroke="transparent" />
           </a>

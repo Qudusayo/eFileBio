@@ -19,15 +19,15 @@ const BusinessSchema = z.object({
   logo: z.string(),
 });
 
-export async function createBusiness(prevState: any, formData: FormData) {
+export async function createBusiness(formData: FormData) {
   const session = await getServerSession(authOptions);
 
   if (!session || !session.user || !session.user.email) {
-    return redirect("/login");
+    redirect("/login");
   }
 
   const businessFormData = BusinessSchema.safeParse({
-    logo: formData.get("logoUrl"),
+    logo: formData.get("logoUrl") ?? "",
     name: formData.get("businessName"),
     description: formData.get("businessDescription"),
   });
@@ -37,7 +37,7 @@ export async function createBusiness(prevState: any, formData: FormData) {
   });
 
   if (!user) {
-    return redirect("/");
+    redirect("/");
   }
 
   if (!businessFormData.success) {

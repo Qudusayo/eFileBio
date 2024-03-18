@@ -1,13 +1,19 @@
 import FormInput from "@/components/form-input";
 import FormSelect from "@/components/form-select";
 import RadioCheckbox from "@/components/radio-checkbox";
-import { Button, Divider } from "@nextui-org/react";
-import { Minus, Plus } from "lucide-react";
+import {
+  identifyingDocumentTypes,
+  sortedCountries,
+  usStates,
+} from "@/utils/constants";
+import { tribalJurisdiction } from "@/utils/tribalJurisdiction";
+import { Avatar, Button, Divider } from "@nextui-org/react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 
 const FormStep3 = () => {
   return (
     <div>
-      <div className="py-6 flex items-center justify-between pb-0">
+      <div className="flex items-center justify-between py-6 pb-0">
         <h2 className="font-semibold">
           Part II. Company Applicant Information
         </h2>
@@ -45,13 +51,13 @@ const FormStep3 = () => {
       <div className="space-y-6 py-6">
         <h2 className="font-semibold">Full legal name and date of birth:</h2>
         <div className="grid grid-cols-3 gap-6">
-          <FormInput label="First name" req />
+          <FormInput label="First name" isRequired />
           <FormInput label="Middle name" />
-          <FormInput label="Individual's last name" req />
+          <FormInput label="Individual's last name" isRequired />
         </div>
         <div className="grid grid-cols-2 gap-6">
           <FormInput label="Suffix" />
-          <FormInput label="Date of birth" req />
+          <FormInput label="Date of birth" isRequired />
         </div>
       </div>
       <Divider className="bg-[#F5F5F5]" />
@@ -70,16 +76,20 @@ const FormStep3 = () => {
           />
         </div>
         <div className="grid grid-cols-2 gap-6">
-          <FormSelect listContent={[]} label="Country/Jurisdiction" req />
+          <FormSelect
+            listContent={sortedCountries}
+            label="Country/Jurisdiction"
+            isRequired
+          />
           <FormInput
             label="Address (number, street, and apt. or suite no.)"
-            req
+            isRequired
           />
         </div>
         <div className="grid grid-cols-3 gap-6">
-          <FormInput label="City" req />
-          <FormInput label="State" req />
-          <FormInput label="ZIP/Foreign postal code*" req />
+          <FormInput label="City" isRequired />
+          <FormSelect listContent={usStates} label="State" isRequired />
+          <FormInput label="ZIP/Foreign postal code*" isRequired />
         </div>
       </div>
       <Divider className="bg-[#F5F5F5]" />
@@ -88,20 +98,32 @@ const FormStep3 = () => {
           Form of identification and issuing jurisdiction:
         </h2>
         <div className="grid grid-cols-2 gap-6">
-          <FormSelect listContent={[]} label="Identifying document type" req />
-          <FormInput label="Identifying document number" req />
+          <FormSelect
+            listContent={identifyingDocumentTypes}
+            label="Identifying document type"
+            isRequired
+          />
+          <FormInput label="Identifying document number" isRequired />
         </div>{" "}
         <h2 className="font-semibold">
           Identifying document issuing jurisdiction{" "}
           <span className="text-red-500">*</span>
         </h2>
         <div className="grid grid-cols-2 gap-6">
-          <FormSelect listContent={[]} label="Country/Jurisdiction" req />
-          <FormSelect listContent={[]} label="State" req />
+          <FormSelect
+            listContent={sortedCountries}
+            label="Country/Jurisdiction"
+            isRequired
+          />
+          <FormSelect listContent={usStates} label="State" isRequired />
         </div>
         <div className="grid grid-cols-2 gap-6">
-          <FormInput label="Local/Tribal" req />
-          <FormInput label="Other local/Tribal description" req />
+          <FormSelect
+            listContent={tribalJurisdiction}
+            label="Local/Tribal"
+            isRequired
+          />
+          <FormInput label="Other local/Tribal description" isRequired />
         </div>
       </div>
       <Divider className="bg-[#F5F5F5]" />
@@ -118,6 +140,30 @@ const FormStep3 = () => {
             className="text-black"
           >
             Add Attachment
+          </Button>
+        </div>
+        <div className="flex items-center justify-between rounded-xl border border-[#F5F5F5] bg-[#FAFAFA] p-3">
+          <div className="flex w-fit gap-4">
+            <Avatar
+              src={"/pdf-logo.png"}
+              className="mx-auto !block h-12 w-12 !rounded-md !bg-transparent text-large"
+            />
+            <div>
+              <h2 className="text-xl font-semibold">
+                New Business eFiling.pdf
+              </h2>
+              <p className="text-sm text-[#525252]">2.4mb</p>
+            </div>
+          </div>
+          <Button
+            isIconOnly
+            size="lg"
+            className="bg-white shadow-sm"
+            // style={{
+            //   boxShadow: "0px 0px 17px 0px #00000005",
+            // }}
+          >
+            <Trash2 className="text-red-500" />
           </Button>
         </div>
       </div>

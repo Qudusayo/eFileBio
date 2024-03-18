@@ -10,9 +10,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const isFormPage = Object.keys(params)[1] === "form";
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex h-full flex-col gap-4">
       {!isFormPage && (
-        <div className="flex justify-between items-end">
+        <div className="flex items-end justify-between">
           <div>
             <h2 className="text-2xl font-semibold">Dashboard</h2>
             <p>
@@ -28,7 +28,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       <div
         className={clsx(
           "flex-1 rounded-2xl",
-          isFormPage ? "p-0 bg-transparent" : "bg-white p-4"
+          isFormPage ? "bg-transparent p-0" : "bg-white p-4",
         )}
       >
         {children}

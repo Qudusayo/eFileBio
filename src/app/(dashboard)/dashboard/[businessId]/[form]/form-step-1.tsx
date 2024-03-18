@@ -1,7 +1,11 @@
+"use client";
+
 import FormInput from "@/components/form-input";
 import FormSelect from "@/components/form-select";
 import RadioCheckbox from "@/components/radio-checkbox";
+import { foreignCountries, taxIdentificationTypes } from "@/utils/constants";
 import { Divider, Input } from "@nextui-org/react";
+import { useFormik } from "formik";
 import {
   BookAudio,
   BriefcaseBusiness,
@@ -10,6 +14,25 @@ import {
 } from "lucide-react";
 
 const FormStep1 = () => {
+  const rc = useFormik({
+    initialValues: {
+      legalName: "",
+      alternateNames: "",
+      datePrepared: new Date()
+        .toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        })
+        .split("/")
+        .join(" / "),
+    },
+
+    onSubmit: (values) => {
+      console.log(JSON.stringify(values, null, 2));
+    },
+  });
+
   return (
     <div>
       <div className="grid grid-cols-2 gap-6 py-6">
@@ -31,17 +54,17 @@ const FormStep1 = () => {
           listContent={[]}
           label="Domestic or Foreign Entity"
           placeholder="Domestic"
-          startIcon={<Earth />}
+          startContent={<Earth />}
         />
         <FormSelect
           listContent={[]}
           label="Entity Type"
           placeholder="Securities reporting issuer"
-          startIcon={<BookAudio />}
+          startContent={<BookAudio />}
         />
       </div>
 
-      <div className="py-6 space-y-6 pt-0">
+      <div className="space-y-6 py-6 pt-0">
         <div>
           <h2 className="text-xl font-semibold">Filing Information</h2>
           <p className="text-sm">
@@ -68,11 +91,11 @@ const FormStep1 = () => {
           <FormInput
             name="datePrepared"
             label="Date prepared (auto filled)"
-            placeholder="01/01/2024"
+            value={rc.values.datePrepared}
+            disabled
           />
         </div>
       </div>
-
       <Divider className="bg-[#F5F5F5]" />
       <div className="space-y-6 py-6">
         <h2 className="font-semibold">
@@ -80,18 +103,17 @@ const FormStep1 = () => {
           any:
         </h2>
         <div className="grid grid-cols-2 gap-6">
-          <FormInput label="Legal Name" req />
+          <FormInput label="Legal Name" isRequired />
           <FormSelect
-            listContent={[
-              { label: "EIN", value: "ein" },
-              { label: "SSN/ITIN", value: "ssn" },
-              { label: "Foreign", value: "foreign" },
-            ]}
+            listContent={taxIdentificationTypes}
             label="Tax Identification type"
-            req
+            isRequired
           />
-          <FormInput label="Tax Identification Number" req />
-          <FormInput label="Country/Jurisdiction (if foreign tax ID only)" />
+          <FormInput label="Tax Identification Number" isRequired />
+          <FormSelect
+            listContent={foreignCountries}
+            label="Country/Jurisdiction (if foreign tax ID only)"
+          />
         </div>
       </div>
     </div>

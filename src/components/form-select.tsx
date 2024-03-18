@@ -1,49 +1,41 @@
-import { Select, SelectItem } from "@nextui-org/react";
+import {
+  Autocomplete,
+  AutocompleteItem,
+  AutocompleteProps,
+} from "@nextui-org/react";
 
 const FormSelect = ({
   label,
   placeholder = "Select",
-  startIcon,
-  req,
   listContent,
-  isInvalid,
-  errorMsg,
-}: {
-  label?: string;
-  placeholder?: string;
-  startIcon?: React.ReactNode;
-  req?: boolean;
-  listContent: { label: string; value: string }[];
-  isInvalid?: boolean;
-  errorMsg?: string;
+  ...props
+}: Omit<AutocompleteProps, "children"> & {
+  listContent: {
+    label: string;
+    value: string;
+  }[];
 }) => {
   return (
-    <div>
-      <Select
-        label={
-          <span className="text-sm text-[#404040]">
-            {label}
-            {req && <span className="text-red-500">*</span>}
-          </span>
-        }
+    <div className="relative">
+      <Autocomplete
+        label={<span className="text-sm text-[#404040]">{label}</span>}
         placeholder={placeholder}
         labelPlacement="outside"
         size="lg"
-        startContent={startIcon}
         radius="sm"
-        classNames={{
-          value: "text-sm",
-          label: "bottom-0",
+        inputProps={{
+          classNames: {
+            input: "text-sm",
+          },
         }}
-        isInvalid={isInvalid}
-        errorMessage={errorMsg}
+        {...props}
       >
-        {listContent.map((list) => (
-          <SelectItem key={list.value} value={list.value}>
+        {listContent.map((list, i) => (
+          <AutocompleteItem key={list.value} value={list.value}>
             {list.label}
-          </SelectItem>
+          </AutocompleteItem>
         ))}
-      </Select>
+      </Autocomplete>
     </div>
   );
 };

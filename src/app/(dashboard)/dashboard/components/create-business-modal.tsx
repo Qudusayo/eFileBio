@@ -1,22 +1,22 @@
 "use client";
 
+import { createBusiness } from "@/lib/actions";
+import { UploadButton } from "@/utils/uploadthing";
 import {
-  Modal,
-  ModalContent,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  useDisclosure,
-  Input,
   Avatar,
+  Button,
+  Input,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  useDisclosure,
 } from "@nextui-org/react";
 import { Add } from "iconsax-react";
-import { UploadButton } from "@/utils/uploadthing";
-import { useState, useRef, useEffect } from "react";
-import { createBusiness } from "@/lib/actions";
-import { ClientUploadedFileData } from "uploadthing/types";
+import { useEffect, useRef, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
+import { ClientUploadedFileData } from "uploadthing/types";
 
 const initialState = {
   created: false,
@@ -49,15 +49,15 @@ export function CreateBusinessModal() {
   return (
     <>
       <div onClick={onOpen}>
-        <div className="bg-[#f59f0b30] rounded-xl border border-dashed hover:border-solid transition-all duration-1000 border-[#F59E0B] py-8 px-5 cursor-pointer h-full">
+        <div className="h-full cursor-pointer rounded-xl border border-dashed border-[#F59E0B] bg-[#f59f0b30] px-5 py-8 transition-all duration-1000 hover:border-solid">
           <Add
             size="100"
             color="#F59E0B"
-            className="block mx-auto mb-4 h-16 w-16"
+            className="mx-auto mb-4 block h-16 w-16"
           />
-          <div className="text-center space-y-2">
-            <h2 className="font-semibold text-xl">Create a Business</h2>
-            <p className="text-sm text-balance">
+          <div className="space-y-2 text-center">
+            <h2 className="text-xl font-semibold">Create a Business</h2>
+            <p className="text-balance text-sm">
               Create a Business to manage eFiling with our help
             </p>
           </div>
@@ -79,10 +79,10 @@ export function CreateBusinessModal() {
               <ModalBody className="space-y-10">
                 <span>Business Logo</span>
                 <input type="hidden" name="logoUrl" ref={logoUrlRef} />
-                <div className="flex items-center gap-5 !mt-0">
+                <div className="!mt-0 flex items-center gap-5">
                   <Avatar
                     src={businessLogo}
-                    className="w-20 h-20 text-large !rounded-md !bg-transparent"
+                    className="h-20 w-20 !rounded-md !bg-transparent text-large"
                   />
                   <UploadButton
                     endpoint="imageUploader"
@@ -90,7 +90,7 @@ export function CreateBusinessModal() {
                     onUploadError={(error: Error) => {
                       alert(`ERROR! ${error.message}`);
                     }}
-                    className="items-center w-fit"
+                    className="w-fit items-center"
                   />
                 </div>
 

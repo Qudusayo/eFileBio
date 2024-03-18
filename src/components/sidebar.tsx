@@ -11,15 +11,15 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <div className="w-64 bg-black h-screen border-r border-gray-300 flex flex-col justify-between p-6">
+    <div className="flex h-screen w-64 flex-col justify-between border-r border-gray-300 bg-black p-6">
       <div>
-        <div className="w-full m-auto pb-5">
+        <div className="m-auto w-full pb-5">
           <Image
             src="/logo.png"
             alt="logo"
             width={50}
             height={50}
-            className="rounded-lg block mx-auto"
+            className="mx-auto block rounded-lg"
           />
         </div>
         <ul>
@@ -77,8 +77,8 @@ function Navlink({
     <Link
       href={href}
       className={[
-        "flex items-center gap-2 p-3 w-full m-auto mt-4 rounded-xl transition-all duration-200 ease-in-out",
-        active ? "bg-[#464647]" : "hover:bg-[#46464740] border-transparent",
+        "m-auto mt-4 flex w-full items-center gap-2 rounded-xl p-3 transition-all duration-200 ease-in-out",
+        active ? "bg-[#464647]" : "border-transparent hover:bg-[#46464740]",
       ].join(" ")}
     >
       <IconComponent

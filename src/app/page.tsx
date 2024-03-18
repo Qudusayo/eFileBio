@@ -37,12 +37,12 @@ export default function Home() {
             className="mx-auto"
           />
 
-          <h2 className="text-5xl font-bold max-w-2xl mx-auto text-center text-balance">
+          <h2 className="mx-auto max-w-2xl text-balance text-center text-5xl font-bold">
             Streamline Your Compliance Journey With eFileBOI
           </h2>
           <AuthButton type="large" />
 
-          <div className="grid grid-cols-5 gap-5 max-w-7xl mx-auto w-[98%] !mt-28">
+          <div className="mx-auto !mt-28 grid w-[98%] max-w-7xl grid-cols-5 gap-5">
             <HeroCard
               icon={<Icons.Identity />}
               title="Simple BOIR filing"
@@ -66,15 +66,15 @@ export default function Home() {
         </div>
       </div>
       <div className="space-y-8 py-24">
-        <div className="flex items-center gap-2 uppercase justify-center">
+        <div className="flex items-center justify-center gap-2 uppercase">
           <Icons.Star />
           <h2>Features</h2>
         </div>
-        <h2 className="text-balance font-bold text-4xl text-center max-w-4xl mx-auto">
+        <h2 className="mx-auto max-w-4xl text-balance text-center text-4xl font-bold">
           Empower your business with our state-of-the-art Electronic Filing
           Solution
         </h2>
-        <div className="grid grid-cols-3 gap-5 max-w-7xl mx-auto w-[98%]">
+        <div className="mx-auto grid w-[98%] max-w-7xl grid-cols-3 gap-5">
           <FeatureCard
             icon={<ClipboardText size="24" color="#FBBF24" variant="Outline" />}
           />
@@ -112,8 +112,8 @@ const HeroCard = ({
   return (
     <div
       className={clsx(
-        "bg-white flex items-center justify-around flex-col space-y-3 text-center p-4",
-        className
+        "flex flex-col items-center justify-around space-y-3 bg-white p-4 text-center",
+        className,
       )}
       style={{
         boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
@@ -135,9 +135,9 @@ const FeatureCard = ({
   description?: string;
 }) => {
   return (
-    <div className="bg-[#FAFAFA] p-4 rounded-2xl space-y-4">
+    <div className="space-y-4 rounded-2xl bg-[#FAFAFA] p-4">
       <div
-        className="bg-white p-4 rounded-xl w-12 h-12 flex items-center justify-center"
+        className="flex h-12 w-12 items-center justify-center rounded-xl bg-white p-4"
         style={{
           boxShadow: "rgba(0, 0, 0, 0.05) 0px 1px 4px",
         }}
@@ -151,7 +151,7 @@ const FeatureCard = ({
             "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut consequat vestibulum luctus. Curabitur vitae odio rhoncus"}
         </p>
       </div>
-      <p className="text-sm text-[#FBBF24] border-b border-b-[#FBBF24] flex items-center gap-2 w-fit">
+      <p className="flex w-fit items-center gap-2 border-b border-b-[#FBBF24] text-sm text-[#FBBF24]">
         <span>Read more</span>
         <ArrowRight size={14} />
       </p>

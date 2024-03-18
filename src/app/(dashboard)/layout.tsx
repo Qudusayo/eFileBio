@@ -9,11 +9,11 @@ export default function DashboardLayout({
 }) {
   return (
     <AuthProvider>
-      <section className="h-screen flex">
+      <section className="flex h-screen">
         <Sidebar />
-        <div className="bg-[#FAFAFA] h-full flex-1 flex flex-col">
+        <div className="flex h-full flex-1 flex-col bg-[#FAFAFA]">
           <AuthNav />
-          <div className="px-4 py-5 overflow-y-auto flex-1 mb-8">
+          <div className="mb-8 flex-1 overflow-y-auto px-4 py-5">
             {children}
           </div>
         </div>

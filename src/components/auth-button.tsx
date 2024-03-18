@@ -26,10 +26,10 @@ const AuthButton = ({ type }: { type: "mininal" | "large" }) => {
       variant="bordered"
       color="warning"
       size={type === "mininal" ? "md" : "lg"}
-      className={clsx("text-black", type === "large" ? "min-w-52 mx-auto" : "")}
+      className={clsx("text-black", type === "large" ? "mx-auto min-w-52" : "")}
       onClick={handleSignIn}
     >
-      {!session && <Icons.Google className="w-6 h-6" />}
+      {!session && <Icons.Google className="h-6 w-6" />}
       {type === "large" ? (
         <span>{session ? "Go to Dashboard" : "Continue with Google"}</span>
       ) : (
