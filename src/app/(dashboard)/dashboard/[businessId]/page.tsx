@@ -20,13 +20,7 @@ const page = async ({ params }: { params: { businessId: string } }) => {
         name: true,
         description: true,
         logo: true,
-        forms: {
-          select: {
-            id: true,
-            updatedAt: true,
-            version: true,
-          },
-        },
+        forms: true,
       },
     });
 
