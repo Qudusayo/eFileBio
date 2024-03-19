@@ -29,6 +29,7 @@
     "react": "^18",
     "react-dom": "^18",
     "uploadthing": "^6.5.2",
+    "yup": "^1.4.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {

@@ -1,19 +1,23 @@
 "use client";
 
-import { Checkbox, CheckboxGroup } from "@nextui-org/react";
+import { Checkbox, CheckboxGroup, CheckboxGroupProps } from "@nextui-org/react";
 import { useState } from "react";
 
 const RadioCheckbox = ({
   name,
+  value,
   values,
-}: {
-  name: string;
+  selectedValue,
+  setFieldValue,
+  ...props
+}: CheckboxGroupProps & {
   values: {
     label: string;
     value: string;
   }[];
+  selectedValue: string;
+  setFieldValue: (field: string, value: typeof selectedValue) => void;
 }) => {
-  const [selectedValue, setSelectedValue] = useState<string[]>([]);
   return (
     <CheckboxGroup
       orientation="horizontal"
@@ -22,12 +26,13 @@ const RadioCheckbox = ({
         wrapper: "gap-8",
       }}
       name={name}
-      value={selectedValue}
+      value={[selectedValue]}
       onChange={(val) => {
         if (!(val as string[]).length) return;
         let selectedValues = val as string[];
-        setSelectedValue([selectedValues[selectedValues.length - 1]]);
+        name && setFieldValue(name, selectedValues[selectedValues.length - 1]);
       }}
+      {...props}
     >
       {values.map((value, index) => (
         <Checkbox

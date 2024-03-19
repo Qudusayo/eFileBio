@@ -4,7 +4,8 @@ import FormInput from "@/components/form-input";
 import FormSelect from "@/components/form-select";
 import RadioCheckbox from "@/components/radio-checkbox";
 import { foreignCountries, taxIdentificationTypes } from "@/utils/constants";
-import { Divider, Input } from "@nextui-org/react";
+import { formStep1Validation } from "@/utils/validations";
+import { Button, Divider, Input } from "@nextui-org/react";
 import { useFormik } from "formik";
 import {
   BookAudio,
@@ -12,12 +13,16 @@ import {
   CalendarDays,
   Earth,
 } from "lucide-react";
+import { useEffect } from "react";
 
 const FormStep1 = () => {
   const rc = useFormik({
     initialValues: {
+      filingType: "",
       legalName: "",
-      alternateNames: "",
+      taxType: "",
+      taxId: "",
+      taxJurisdiction: "",
       datePrepared: new Date()
         .toLocaleDateString("en-US", {
           year: "numeric",
@@ -27,11 +32,37 @@ const FormStep1 = () => {
         .split("/")
         .join(" / "),
     },
-
+    validationSchema: formStep1Validation,
     onSubmit: (values) => {
       console.log(JSON.stringify(values, null, 2));
     },
   });
+
+  const resetValueOnDiff = (field: keyof typeof rc.values) => {
+    rc.setFieldValue(field, "");
+  };
+
+  useEffect(() => {
+    if (rc.values.taxType !== "foreign") {
+      resetValueOnDiff("taxJurisdiction");
+      rc.setFieldError("taxJurisdiction", "");
+      rc.setFieldTouched("taxJurisdiction", false);
+    }
+  }, [rc.values.taxType]);
+
+  useEffect(() => {
+    if (["INITIAL", "NEW_EXEMPT"].includes(rc.values.filingType)) {
+      ["legalName", "taxType", "taxId", "taxJurisdiction"].forEach((field) => {
+        resetValueOnDiff(field as keyof typeof rc.values);
+        rc.setFieldTouched(field, false);
+        rc.setFieldError(field, "");
+      });
+    }
+    if (rc.values.filingType === "NEW_EXEMPT") {
+      rc.resetForm();
+      rc.setFieldValue("filingType", "NEW_EXEMPT");
+    }
+  }, [rc.values.filingType]);
 
   return (
     <div>
@@ -85,6 +116,11 @@ const FormStep1 = () => {
               { label: "c. Update prior report", value: "UPDATE" },
               { label: "d. Newly exempt entity", value: "NEW_EXEMPT" },
             ]}
+            selectedValue={rc.values.filingType}
+            setFieldValue={rc.setFieldValue}
+            onBlur={rc.handleBlur}
+            isInvalid={rc.touched.filingType && !!rc.errors.filingType}
+            errorMessage={rc.touched.filingType && rc.errors.filingType}
           />
         </div>
         <div className="grid grid-cols-3 gap-6">
@@ -97,25 +133,65 @@ const FormStep1 = () => {
         </div>
       </div>
       <Divider className="bg-[#F5F5F5]" />
-      <div className="space-y-6 py-6">
-        <h2 className="font-semibold">
-          Reporting Company information associated with most recent report, if
-          any:
-        </h2>
-        <div className="grid grid-cols-2 gap-6">
-          <FormInput label="Legal Name" isRequired />
-          <FormSelect
-            listContent={taxIdentificationTypes}
-            label="Tax Identification type"
-            isRequired
-          />
-          <FormInput label="Tax Identification Number" isRequired />
-          <FormSelect
-            listContent={foreignCountries}
-            label="Country/Jurisdiction (if foreign tax ID only)"
-          />
+      {rc.values.filingType !== "INITIAL" && rc.values.filingType && (
+        <div className="space-y-6 py-6">
+          <h2 className="font-semibold">
+            Reporting Company information associated with most recent report, if
+            any:
+          </h2>
+          <div className="grid grid-cols-2 gap-6">
+            <FormInput
+              label="Legal Name"
+              isRequired
+              name="legalName"
+              value={rc.values.legalName}
+              onChange={rc.handleChange}
+              onBlur={rc.handleBlur}
+              isInvalid={rc.touched.legalName && !!rc.errors.legalName}
+              errorMessage={rc.touched.legalName && rc.errors.legalName}
+            />
+            <FormSelect
+              listContent={taxIdentificationTypes}
+              label="Tax Identification type"
+              name="taxType"
+              placeholder="Select an ID type"
+              selectedKey={rc.values.taxType}
+              setFieldValue={rc.setFieldValue}
+              onBlur={rc.handleBlur}
+              isInvalid={rc.touched.taxType && !!rc.errors.taxType}
+              errorMessage={rc.touched.taxType && rc.errors.taxType}
+              isRequired
+            />
+            <FormInput
+              label="Tax Identification Number"
+              name="taxId"
+              value={rc.values.taxId}
+              onChange={rc.handleChange}
+              onBlur={rc.handleBlur}
+              isInvalid={rc.touched.taxId && !!rc.errors.taxId}
+              errorMessage={rc.touched.taxId && rc.errors.taxId}
+              isRequired
+            />
+            <FormSelect
+              listContent={foreignCountries}
+              label="Country/Jurisdiction (if foreign tax ID only)"
+              name="taxJurisdiction"
+              placeholder="Select a country"
+              selectedKey={rc.values.taxJurisdiction}
+              setFieldValue={rc.setFieldValue}
+              onBlur={rc.handleBlur}
+              isInvalid={
+                rc.touched.taxJurisdiction && !!rc.errors.taxJurisdiction
+              }
+              errorMessage={
+                rc.touched.taxJurisdiction && rc.errors.taxJurisdiction
+              }
+              isDisabled={rc.values.taxType !== "foreign"}
+              isRequired={rc.values.taxType === "foreign"}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

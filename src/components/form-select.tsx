@@ -6,6 +6,7 @@ import {
 
 const FormSelect = ({
   label,
+  setFieldValue,
   placeholder = "Select",
   listContent,
   ...props
@@ -14,6 +15,7 @@ const FormSelect = ({
     label: string;
     value: string;
   }[];
+  setFieldValue?: (field: string, value: typeof props.value) => void;
 }) => {
   return (
     <div className="relative">
@@ -27,6 +29,9 @@ const FormSelect = ({
           classNames: {
             input: "text-sm",
           },
+        }}
+        onSelectionChange={(val) => {
+          setFieldValue && props.name && setFieldValue(props.name, val);
         }}
         {...props}
       >
