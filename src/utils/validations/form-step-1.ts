@@ -13,15 +13,15 @@ const formStep1Validation = Yup.object().shape({
     otherwise: (schema) => schema.notRequired(),
   }),
   taxType: Yup.mixed()
-    .oneOf(["ssn", "ein", "foreign"], "Tax ID is required")
+    .oneOf(["ssn", "ein", "foreign"], "Tax type is required")
     .when("filingType", {
       is: (val: string) => val !== "INITIAL",
-      then: (schema) => schema.required("Tax ID is required"),
+      then: (schema) => schema.required("Tax type is required"),
       otherwise: (schema) => schema.notRequired(),
     }),
   taxId: Yup.string().when("filingType", {
     is: (val: string) => val !== "INITIAL",
-    then: (schema) => schema.required("Tax type is required"),
+    then: (schema) => schema.required("Tax ID is required"),
     otherwise: (schema) => schema.notRequired(),
   }),
   taxJurisdiction: Yup.string().when("taxType", {

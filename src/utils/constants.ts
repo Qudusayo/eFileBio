@@ -1,4 +1,7 @@
 import { Country, State } from "country-state-city";
+import { foreignStates } from "./foreignStates";
+import { domesticStates } from "./domesticStates";
+import { tribalJurisdiction } from "./tribalJurisdiction";
 
 const priorityCountries = [
   { value: "US", label: "United States of America" },
@@ -44,9 +47,12 @@ const taxIdentificationTypes = [
 
 export {
   usStates,
+  foreignStates,
+  domesticStates,
   sortedCountries,
   foreignCountries,
   priorityCountries,
+  tribalJurisdiction,
   taxIdentificationTypes,
   identifyingDocumentTypes,
 };
