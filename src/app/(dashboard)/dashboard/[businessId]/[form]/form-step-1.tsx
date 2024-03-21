@@ -1,5 +1,6 @@
 "use client";
 
+import FormDate from "@/components/form-date";
 import FormInput from "@/components/form-input";
 import FormSelect from "@/components/form-select";
 import RadioCheckbox from "@/components/radio-checkbox";
@@ -72,10 +73,9 @@ const FormStep1 = () => {
           placeholder="Golden Gate Capital LLC"
           startContent={<BriefcaseBusiness />}
         />
-        <Input
-          type="email"
+        <FormDate
           label={<span className="text-sm">Business Creation Date</span>}
-          placeholder="you@example.com"
+          placeholder={`01/01/${new Date().getFullYear()}`}
           labelPlacement="outside"
           size="lg"
           startContent={<CalendarDays />}
@@ -143,10 +143,7 @@ const FormStep1 = () => {
             <FormInput
               label="Legal Name"
               isRequired
-              name="legalName"
-              value={rc.values.legalName}
-              onChange={rc.handleChange}
-              onBlur={rc.handleBlur}
+              {...rc.getFieldProps("legalName")}
               isInvalid={rc.touched.legalName && !!rc.errors.legalName}
               errorMessage={rc.touched.legalName && rc.errors.legalName}
             />
@@ -164,10 +161,7 @@ const FormStep1 = () => {
             />
             <FormInput
               label="Tax Identification Number"
-              name="taxId"
-              value={rc.values.taxId}
-              onChange={rc.handleChange}
-              onBlur={rc.handleBlur}
+              {...rc.getFieldProps("taxId")}
               isInvalid={rc.touched.taxId && !!rc.errors.taxId}
               errorMessage={rc.touched.taxId && rc.errors.taxId}
               isRequired

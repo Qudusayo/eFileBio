@@ -73,9 +73,7 @@ const formStep2Validation = Yup.object().shape(
   },
   [
     ["foreignFirstState", "foreignTribalJurisdiction"],
-    // ["foreignOtherTribe", "domesticTribalJurisdiction"],
     ["domesticState", "domesticTribalJurisdiction"],
-    // ["domesticOtherTribe", "domesticTribalJurisdiction"],
   ],
 );
 

@@ -91,7 +91,7 @@ const FormStep2 = () => {
 
   useEffect(() => {
     rc.setFieldValue("foreignOtherTribe", "");
-    rc.setFieldTouched("domesticOtherTribe", "");
+    rc.setFieldValue("domesticOtherTribe", "");
   }, [
     rc.values.domesticTribalJurisdiction,
     rc.values.foreignTribalJurisdiction,
@@ -134,10 +134,7 @@ const FormStep2 = () => {
           <FormInput
             label="Reporting Company legal name"
             isRequired
-            name="legalName"
-            value={rc.values.legalName}
-            onChange={rc.handleChange}
-            onBlur={rc.handleBlur}
+            {...rc.getFieldProps("legalName")}
             isInvalid={rc.touched.legalName && !!rc.errors.legalName}
             errorMessage={rc.touched.legalName && rc.errors.legalName}
           />
@@ -148,9 +145,7 @@ const FormStep2 = () => {
                 <div className="flex flex-grow items-end gap-2">
                   <FormInput
                     label="Alternate name (e.g. trade name, DBA)"
-                    name={`alternateNames[${index}]`}
-                    value={rc.values.alternateNames[index]}
-                    onChange={rc.handleChange}
+                    {...rc.getFieldProps(`alternateNames[${index}]`)}
                   />
                   <Button
                     isIconOnly
@@ -205,10 +200,7 @@ const FormStep2 = () => {
           />
           <FormInput
             label="Tax Identification Number"
-            name="taxId"
-            value={rc.values.taxId}
-            onChange={rc.handleChange}
-            onBlur={rc.handleBlur}
+            {...rc.getFieldProps("taxId")}
             isInvalid={rc.touched.taxId && !!rc.errors.taxId}
             errorMessage={rc.touched.taxId && rc.errors.taxId}
             isRequired
@@ -298,10 +290,7 @@ const FormStep2 = () => {
                 />
                 <FormInput
                   label="Name of the other Tribe"
-                  name="domesticOtherTribe"
-                  value={rc.values.domesticOtherTribe}
-                  onChange={rc.handleChange}
-                  onBlur={rc.handleBlur}
+                  {...rc.getFieldProps("domesticOtherTribe")}
                   isRequired={rc.values.domesticTribalJurisdiction === "Other"}
                   isDisabled={rc.values.domesticTribalJurisdiction !== "Other"}
                   isInvalid={
@@ -356,10 +345,7 @@ const FormStep2 = () => {
             />
             <FormInput
               label="Name of the other Tribe"
-              name="foreignOtherTribe"
-              value={rc.values.foreignOtherTribe}
-              onChange={rc.handleChange}
-              onBlur={rc.handleBlur}
+              {...rc.getFieldProps("foreignOtherTribe")}
               isRequired={rc.values.foreignTribalJurisdiction === "Other"}
               isDisabled={rc.values.foreignTribalJurisdiction !== "Other"}
               isInvalid={
@@ -389,11 +375,8 @@ const FormStep2 = () => {
           />
           <FormInput
             label="Address (number, street, and apt. or suite no.)"
-            name="address"
-            value={rc.values.address}
-            onChange={rc.handleChange}
+            {...rc.getFieldProps("address")}
             isRequired
-            onBlur={rc.handleBlur}
             isInvalid={rc.touched.address && !!rc.errors.address}
             errorMessage={rc.touched.address && rc.errors.address}
           />
@@ -401,11 +384,8 @@ const FormStep2 = () => {
         <div className="grid grid-cols-3 gap-6">
           <FormInput
             label="City"
-            name="city"
-            value={rc.values.city}
-            onChange={rc.handleChange}
+            {...rc.getFieldProps("city")}
             isRequired
-            onBlur={rc.handleBlur}
             isInvalid={rc.touched.city && !!rc.errors.city}
             errorMessage={rc.touched.city && rc.errors.city}
           />
@@ -422,16 +402,16 @@ const FormStep2 = () => {
           />
           <FormInput
             label="Zip Code"
-            name="zip"
-            value={rc.values.zip}
-            onChange={rc.handleChange}
+            {...rc.getFieldProps("zip")}
             isRequired
-            onBlur={rc.handleBlur}
             isInvalid={rc.touched.zip && !!rc.errors.zip}
             errorMessage={rc.touched.zip && rc.errors.zip}
           />
         </div>
       </div>
+      <Button type="submit" onClick={() => rc.handleSubmit()}>
+        Submit
+      </Button>
     </div>
   );
 };

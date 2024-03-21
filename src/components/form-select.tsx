@@ -30,6 +30,7 @@ const FormSelect = ({
             input: "text-sm",
           },
         }}
+        onKeyDown={(e: any) => e.continuePropagation()}
         onSelectionChange={(val) => {
           setFieldValue && props.name && setFieldValue(props.name, val);
         }}
