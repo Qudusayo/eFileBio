@@ -1,4 +1,4 @@
-import prisma from "@/lib/db";
+import { prisma } from "@/lib/db";
 import { Avatar, Button } from "@nextui-org/react";
 import { Business, Form } from "@prisma/client";
 import { ArrowLeft } from "iconsax-react";

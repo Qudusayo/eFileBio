@@ -11,68 +11,56 @@ import {
   taxIdentificationTypes,
 } from "@/utils/constants";
 import { tribalJurisdiction } from "@/utils/tribalJurisdiction";
-import { formStep2Validation } from "@/utils/validations";
-import { Button, Checkbox, CheckboxGroup, Divider } from "@nextui-org/react";
-import { useFormik } from "formik";
-import { Minus, Plus } from "lucide-react";
+import { Button, Checkbox, Divider } from "@nextui-org/react";
+import { FormikProps } from "formik";
+import { Minus, MoveRight, Plus } from "lucide-react";
 import { useEffect, useState } from "react";
+import { iFormType } from "./page";
 
-const FormStep2 = () => {
+const FormStep2 = ({ formData }: { formData: FormikProps<iFormType> }) => {
+  const {
+    values,
+    touched,
+    errors,
+    getFieldProps,
+    setFieldValue,
+    handleBlur,
+    setFieldError,
+    setFieldTouched,
+  } = formData;
+  const { rc: rcValue } = values;
+  const { rc: rcTouched } = touched;
+  const { rc: rcError } = errors;
+
   const [isUnitedStates, setIsUnitedStates] = useState(false);
   const [isPriorityCountry, setIsPriorityCountry] = useState(false);
   const [rcAlternateNameCount, setRcAlternateNameCount] = useState(1);
 
   const location = isPriorityCountry ? "domestic" : "foreign";
 
-  const rc = useFormik({
-    initialValues: {
-      legalName: "",
-      alternateNames: [],
-      taxType: "",
-      taxId: "",
-      taxJurisdiction: "",
-      jurisdiction: "",
-      domesticState: "",
-      domesticTribalJurisdiction: "",
-      domesticOtherTribe: "",
-      foreignFirstState: "",
-      foreignTribalJurisdiction: "",
-      foreignOtherTribe: "",
-      country: "",
-      address: "",
-      city: "",
-      state: "",
-      zip: "",
-    },
-    validationSchema: formStep2Validation,
-    onSubmit: (values) => {
-      console.log(JSON.stringify(values, null, 2));
-    },
-  });
-
-  const resetValueOnDiff = (field: keyof typeof rc.values) => {
-    rc.setFieldValue(field, "");
+  const resetValueOnDiff = (field: keyof typeof rcValue) => {
+    setFieldValue(`rc[${field}]`, "");
   };
 
   useEffect(() => {
-    if (rc.values.taxType !== "foreign") {
+    if (rcValue.taxType !== "foreign") {
       resetValueOnDiff("taxJurisdiction");
-      rc.setFieldError("taxJurisdiction", "");
-      rc.setFieldTouched("taxJurisdiction", false);
+      setFieldError("rc.taxJurisdiction", "");
+      setFieldTouched("rc.taxJurisdiction", false);
     }
-  }, [rc.values.taxType]);
+  }, [rcValue.taxType]);
 
   useEffect(() => {
-    setIsUnitedStates(rc.values.jurisdiction === "US");
+    setIsUnitedStates(rcValue.jurisdiction === "US");
     const isProperCountry = priorityCountries.some(
-      (country) => country.value === rc.values.jurisdiction,
+      (country) => country.value === rcValue.jurisdiction,
     );
     setIsPriorityCountry(isProperCountry);
 
     if (isPriorityCountry) {
-      rc.setFieldValue("domesticState", rc.values.jurisdiction);
+      setFieldValue("rc.domesticState", rcValue.jurisdiction);
     }
-  }, [rc.values.jurisdiction]);
+  }, [rcValue.jurisdiction]);
 
   useEffect(() => {
     [
@@ -83,49 +71,41 @@ const FormStep2 = () => {
       "foreignTribalJurisdiction",
       "foreignOtherTribe",
     ].forEach((field) => {
-      resetValueOnDiff(field as keyof typeof rc.values);
-      rc.setFieldTouched(field, false);
-      rc.setFieldError(field, "");
+      resetValueOnDiff(field as keyof typeof rcValue);
+      setFieldError(`rc[${field}]`, "");
+      setFieldTouched(`rc[${field}]`, false);
     });
   }, [location, isUnitedStates]);
 
   useEffect(() => {
-    rc.setFieldValue("foreignOtherTribe", "");
-    rc.setFieldValue("domesticOtherTribe", "");
-  }, [
-    rc.values.domesticTribalJurisdiction,
-    rc.values.foreignTribalJurisdiction,
-  ]);
+    setFieldValue("rc.foreignOtherTribe", "");
+    setFieldValue("rc.domesticOtherTribe", "");
+  }, [rcValue.domesticTribalJurisdiction, rcValue.foreignTribalJurisdiction]);
 
   return (
-    <div>
+    <form onSubmit={formData.handleSubmit}>
       <div className="flex items-center justify-between py-6">
-        <h2>Part I. Reporting Company Information</h2>
-        <CheckboxGroup
-          defaultValue={["buenos-aires", "london"]}
-          orientation="horizontal"
-          color="warning"
-          classNames={{
-            wrapper: "gap-8",
-          }}
-        >
+        <h2 className="font-semibold">Part I. Reporting Company Information</h2>
+        <div className="flex items-center gap-6">
           <Checkbox
-            value="buenos-aires"
+            color="warning"
             classNames={{
               icon: "text-white",
             }}
+            {...getFieldProps("rc.isRequestingId")}
           >
             Request to receive FinCEN Identifier (FinCEN ID)
           </Checkbox>
           <Checkbox
-            value="sydney"
+            color="warning"
             classNames={{
               icon: "text-white",
             }}
+            {...getFieldProps("rc.isForeignPooledInvestmentVehicle")}
           >
             Foreign pooled investment vehicle
           </Checkbox>
-        </CheckboxGroup>
+        </div>
       </div>
       <Divider className="bg-[#F5F5F5]" />
       <div className="space-y-6 py-6">
@@ -134,9 +114,9 @@ const FormStep2 = () => {
           <FormInput
             label="Reporting Company legal name"
             isRequired
-            {...rc.getFieldProps("legalName")}
-            isInvalid={rc.touched.legalName && !!rc.errors.legalName}
-            errorMessage={rc.touched.legalName && rc.errors.legalName}
+            {...getFieldProps("rc.legalName")}
+            isInvalid={rcTouched?.legalName && !!rcError?.legalName}
+            errorMessage={rcTouched?.legalName && rcError?.legalName}
           />
           {Array(rcAlternateNameCount)
             .fill("_")
@@ -145,7 +125,7 @@ const FormStep2 = () => {
                 <div className="flex flex-grow items-end gap-2">
                   <FormInput
                     label="Alternate name (e.g. trade name, DBA)"
-                    {...rc.getFieldProps(`alternateNames[${index}]`)}
+                    {...getFieldProps(`rc.alternateNames[${index}]`)}
                   />
                   <Button
                     isIconOnly
@@ -159,12 +139,10 @@ const FormStep2 = () => {
                     onClick={() =>
                       setRcAlternateNameCount((prev) => {
                         if (index === rcAlternateNameCount - 1) return prev + 1;
-                        rc.setValues({
-                          ...rc.values,
-                          alternateNames: rc.values.alternateNames.filter(
-                            (_, i) => i !== index,
-                          ),
-                        });
+                        setFieldValue(
+                          "rc.alternateNames",
+                          rcValue.alternateNames.filter((_, i) => i !== index),
+                        );
                         return prev - 1;
                       })
                     }
@@ -189,38 +167,36 @@ const FormStep2 = () => {
           <FormSelect
             listContent={taxIdentificationTypes}
             label="Tax Identification type"
-            name="taxType"
+            name="rc.taxType"
             placeholder="Select an ID type"
-            selectedKey={rc.values.taxType}
-            setFieldValue={rc.setFieldValue}
-            onBlur={rc.handleBlur}
-            isInvalid={rc.touched.taxType && !!rc.errors.taxType}
-            errorMessage={rc.touched.taxType && rc.errors.taxType}
+            selectedKey={rcValue.taxType}
+            setFieldValue={setFieldValue}
+            onBlur={handleBlur}
+            isInvalid={rcTouched?.taxType && !!rcError?.taxType}
+            errorMessage={rcTouched?.taxType && rcError?.taxType}
             isRequired
           />
           <FormInput
             label="Tax Identification Number"
-            {...rc.getFieldProps("taxId")}
-            isInvalid={rc.touched.taxId && !!rc.errors.taxId}
-            errorMessage={rc.touched.taxId && rc.errors.taxId}
+            {...getFieldProps("rc.taxId")}
+            isInvalid={rcTouched?.taxId && !!rcError?.taxId}
+            errorMessage={rcTouched?.taxId && rcError?.taxId}
             isRequired
           />
           <FormSelect
             listContent={foreignCountries}
             label="Country/Jurisdiction (if foreign tax ID only)"
-            name="taxJurisdiction"
+            name="rc.taxJurisdiction"
             placeholder="Select a country"
-            selectedKey={rc.values.taxJurisdiction}
-            setFieldValue={rc.setFieldValue}
-            onBlur={rc.handleBlur}
-            isInvalid={
-              rc.touched.taxJurisdiction && !!rc.errors.taxJurisdiction
-            }
+            selectedKey={rcValue.taxJurisdiction}
+            setFieldValue={setFieldValue}
+            onBlur={handleBlur}
+            isInvalid={rcTouched?.taxJurisdiction && !!rcError?.taxJurisdiction}
             errorMessage={
-              rc.touched.taxJurisdiction && rc.errors.taxJurisdiction
+              rcTouched?.taxJurisdiction && rcError?.taxJurisdiction
             }
-            isDisabled={rc.values.taxType !== "foreign"}
-            isRequired={rc.values.taxType === "foreign"}
+            isDisabled={rcValue.taxType !== "foreign"}
+            isRequired={rcValue.taxType === "foreign"}
           />
         </div>
       </div>
@@ -234,72 +210,71 @@ const FormStep2 = () => {
             listContent={sortedCountries}
             label="Country/Jurisdiction of formation"
             isRequired
-            name="jurisdiction"
+            name="rc.jurisdiction"
             placeholder="Select a country"
-            selectedKey={rc.values.jurisdiction}
-            setFieldValue={rc.setFieldValue}
-            onBlur={rc.handleBlur}
-            isInvalid={rc.touched.jurisdiction && !!rc.errors.jurisdiction}
-            errorMessage={rc.touched.jurisdiction && rc.errors.jurisdiction}
+            selectedKey={rcValue.jurisdiction}
+            setFieldValue={setFieldValue}
+            onBlur={handleBlur}
+            isInvalid={rcTouched?.jurisdiction && !!rcError?.jurisdiction}
+            errorMessage={rcTouched?.jurisdiction && rcError?.jurisdiction}
           />
         </div>
       </div>
-      {location === "domestic" && rc.values.jurisdiction && (
+      {location === "domestic" && rcValue.jurisdiction && (
         <div className="space-y-6 pb-6">
           <h2 className="font-semibold">Domestic Reporting Company:</h2>
           <div className="grid grid-cols-3 gap-6">
             <FormSelect
-              name="domesticState"
+              name="rc.domesticState"
               label="State of formation"
               listContent={
                 isUnitedStates
                   ? domesticStates
                   : ([
                       priorityCountries.find(
-                        (country) => country.value === rc.values.jurisdiction,
+                        (country) => country.value === rcValue.jurisdiction,
                       ),
                     ] as { label: string; value: string }[])
               }
-              selectedKey={rc.values.domesticState}
+              selectedKey={rcValue.domesticState}
               isDisabled={
                 (!isUnitedStates && isPriorityCountry && false) ||
-                (!!rc.values.domesticTribalJurisdiction && isUnitedStates)
+                (!!rcValue.domesticTribalJurisdiction && isUnitedStates)
               }
-              setFieldValue={rc.setFieldValue}
-              isInvalid={rc.touched.domesticState && !!rc.errors.domesticState}
-              errorMessage={rc.touched.domesticState && rc.errors.domesticState}
+              setFieldValue={setFieldValue}
+              isInvalid={rcTouched?.domesticState && !!rcError?.domesticState}
+              errorMessage={rcTouched?.domesticState && rcError?.domesticState}
             />
             {isUnitedStates && (
               <>
                 <FormSelect
                   listContent={tribalJurisdiction}
                   label="Tribal jurisdiction of formation"
-                  name="domesticTribalJurisdiction"
-                  selectedKey={rc.values.domesticTribalJurisdiction}
-                  setFieldValue={rc.setFieldValue}
-                  onBlur={rc.handleBlur}
-                  isDisabled={!!rc.values.domesticState}
+                  name="rc.domesticTribalJurisdiction"
+                  selectedKey={rcValue.domesticTribalJurisdiction}
+                  setFieldValue={setFieldValue}
+                  onBlur={handleBlur}
+                  isDisabled={!!rcValue.domesticState}
                   isInvalid={
-                    rc.touched.domesticTribalJurisdiction &&
-                    !!rc.errors.domesticTribalJurisdiction
+                    rcTouched?.domesticTribalJurisdiction &&
+                    !!rcError?.domesticTribalJurisdiction
                   }
                   errorMessage={
-                    rc.touched.domesticTribalJurisdiction &&
-                    rc.errors.domesticTribalJurisdiction
+                    rcTouched?.domesticTribalJurisdiction &&
+                    rcError?.domesticTribalJurisdiction
                   }
                 />
                 <FormInput
                   label="Name of the other Tribe"
-                  {...rc.getFieldProps("domesticOtherTribe")}
-                  isRequired={rc.values.domesticTribalJurisdiction === "Other"}
-                  isDisabled={rc.values.domesticTribalJurisdiction !== "Other"}
+                  {...getFieldProps("rc.domesticOtherTribe")}
+                  isRequired={rcValue.domesticTribalJurisdiction === "Other"}
+                  isDisabled={rcValue.domesticTribalJurisdiction !== "Other"}
                   isInvalid={
-                    rc.touched.domesticOtherTribe &&
-                    !!rc.errors.domesticOtherTribe
+                    rcTouched?.domesticOtherTribe &&
+                    !!rcError?.domesticOtherTribe
                   }
                   errorMessage={
-                    rc.touched.domesticOtherTribe &&
-                    rc.errors.domesticOtherTribe
+                    rcTouched?.domesticOtherTribe && rcError?.domesticOtherTribe
                   }
                 />
               </>
@@ -307,52 +282,50 @@ const FormStep2 = () => {
           </div>
         </div>
       )}
-      {location === "foreign" && rc.values.jurisdiction && (
+      {location === "foreign" && rcValue.jurisdiction && (
         <div className="space-y-6 pb-6">
           <h2 className="font-semibold">Foreign Reporting Company:</h2>
           <div className="grid grid-cols-3 gap-6">
             <FormSelect
               listContent={foreignStates}
               label="State of first registration"
-              name="foreignFirstState"
-              selectedKey={rc.values.foreignFirstState}
-              setFieldValue={rc.setFieldValue}
-              // isRequired={}
-              isDisabled={!!rc.values.foreignTribalJurisdiction}
+              name="rc.foreignFirstState"
+              selectedKey={rcValue.foreignFirstState}
+              setFieldValue={setFieldValue}
+              isDisabled={!!rcValue.foreignTribalJurisdiction}
               isInvalid={
-                rc.touched.foreignFirstState && !!rc.errors.foreignFirstState
+                rcTouched?.foreignFirstState && !!rcError?.foreignFirstState
               }
               errorMessage={
-                rc.touched.foreignFirstState && rc.errors.foreignFirstState
+                rcTouched?.foreignFirstState && rcError?.foreignFirstState
               }
             />
             <FormSelect
               listContent={tribalJurisdiction}
               label="Tribal jurisdiction of first registration"
-              name="foreignTribalJurisdiction"
-              selectedKey={rc.values.foreignTribalJurisdiction}
-              setFieldValue={rc.setFieldValue}
-              // isRequired={}
-              isDisabled={!!rc.values.foreignFirstState}
+              name="rc.foreignTribalJurisdiction"
+              selectedKey={rcValue.foreignTribalJurisdiction}
+              setFieldValue={setFieldValue}
+              isDisabled={!!rcValue.foreignFirstState}
               isInvalid={
-                rc.touched.foreignTribalJurisdiction &&
-                !!rc.errors.foreignTribalJurisdiction
+                rcTouched?.foreignTribalJurisdiction &&
+                !!rcError?.foreignTribalJurisdiction
               }
               errorMessage={
-                rc.touched.foreignTribalJurisdiction &&
-                rc.errors.foreignTribalJurisdiction
+                rcTouched?.foreignTribalJurisdiction &&
+                rcError?.foreignTribalJurisdiction
               }
             />
             <FormInput
               label="Name of the other Tribe"
-              {...rc.getFieldProps("foreignOtherTribe")}
-              isRequired={rc.values.foreignTribalJurisdiction === "Other"}
-              isDisabled={rc.values.foreignTribalJurisdiction !== "Other"}
+              {...getFieldProps("rc.foreignOtherTribe")}
+              isRequired={rcValue.foreignTribalJurisdiction === "Other"}
+              isDisabled={rcValue.foreignTribalJurisdiction !== "Other"}
               isInvalid={
-                rc.touched.foreignOtherTribe && !!rc.errors.foreignOtherTribe
+                rcTouched?.foreignOtherTribe && !!rcError?.foreignOtherTribe
               }
               errorMessage={
-                rc.touched.foreignOtherTribe && rc.errors.foreignOtherTribe
+                rcTouched?.foreignOtherTribe && rcError?.foreignOtherTribe
               }
             />
           </div>
@@ -365,54 +338,51 @@ const FormStep2 = () => {
           <FormSelect
             listContent={priorityCountries}
             label="U.S. or U.S. Territory"
-            name="country"
-            selectedKey={rc.values.country}
-            setFieldValue={rc.setFieldValue}
+            name="rc.country"
+            selectedKey={rcValue.country}
+            setFieldValue={setFieldValue}
             isRequired
-            onBlur={rc.handleBlur}
-            isInvalid={rc.touched.country && !!rc.errors.country}
-            errorMessage={rc.touched.country && rc.errors.country}
+            onBlur={handleBlur}
+            isInvalid={rcTouched?.country && !!rcError?.country}
+            errorMessage={rcTouched?.country && rcError?.country}
           />
           <FormInput
             label="Address (number, street, and apt. or suite no.)"
-            {...rc.getFieldProps("address")}
+            {...getFieldProps("rc.address")}
             isRequired
-            isInvalid={rc.touched.address && !!rc.errors.address}
-            errorMessage={rc.touched.address && rc.errors.address}
+            isInvalid={rcTouched?.address && !!rcError?.address}
+            errorMessage={rcTouched?.address && rcError?.address}
           />
         </div>
         <div className="grid grid-cols-3 gap-6">
           <FormInput
             label="City"
-            {...rc.getFieldProps("city")}
+            {...getFieldProps("rc.city")}
             isRequired
-            isInvalid={rc.touched.city && !!rc.errors.city}
-            errorMessage={rc.touched.city && rc.errors.city}
+            isInvalid={rcTouched?.city && !!rcError?.city}
+            errorMessage={rcTouched?.city && rcError?.city}
           />
           <FormSelect
             listContent={domesticStates}
             label="State"
-            name="state"
-            selectedKey={rc.values.state}
-            setFieldValue={rc.setFieldValue}
+            name="rc.state"
+            selectedKey={rcValue.state}
+            setFieldValue={setFieldValue}
             isRequired
-            onBlur={rc.handleBlur}
-            isInvalid={rc.touched.state && !!rc.errors.state}
-            errorMessage={rc.touched.state && rc.errors.state}
+            onBlur={handleBlur}
+            isInvalid={rcTouched?.state && !!rcError?.state}
+            errorMessage={rcTouched?.state && rcError?.state}
           />
           <FormInput
             label="Zip Code"
-            {...rc.getFieldProps("zip")}
+            {...getFieldProps("rc.zip")}
             isRequired
-            isInvalid={rc.touched.zip && !!rc.errors.zip}
-            errorMessage={rc.touched.zip && rc.errors.zip}
+            isInvalid={rcTouched?.zip && !!rcError?.zip}
+            errorMessage={rcTouched?.zip && rcError?.zip}
           />
         </div>
       </div>
-      <Button type="submit" onClick={() => rc.handleSubmit()}>
-        Submit
-      </Button>
-    </div>
+    </form>
   );
 };
 

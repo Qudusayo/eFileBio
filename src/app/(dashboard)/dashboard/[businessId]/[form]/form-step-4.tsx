@@ -9,7 +9,7 @@ import { tribalJurisdiction } from "@/utils/tribalJurisdiction";
 import { Button, Checkbox, Divider } from "@nextui-org/react";
 import { Minus, Plus } from "lucide-react";
 
-const FormStep4 = () => {
+const FormStep4 = ({}: {}) => {
   return (
     <div>
       <div className="flex items-center justify-between py-6 pb-0">

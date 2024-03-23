@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import prisma from "./db";
+import { prisma } from "./db";
 import { z } from "zod";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -27,7 +27,7 @@ export async function createBusiness(formData: FormData) {
   }
 
   const businessFormData = BusinessSchema.safeParse({
-    logo: formData.get("logoUrl") ?? "",
+    logo: formData.get("logoUrl"),
     name: formData.get("businessName"),
     description: formData.get("businessDescription"),
   });

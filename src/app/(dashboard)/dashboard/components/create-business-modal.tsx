@@ -28,14 +28,14 @@ export function CreateBusinessModal() {
   const logoUrlRef = useRef<HTMLInputElement>(null);
   const [businessLogo, setBusinessLogo] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
-  const [state, formAction] = useFormState(createBusiness, initialState);
+  // const [state, formAction] = useFormState(createBusiness, initialState);
 
-  useEffect(() => {
-    if (state.created) {
-      onOpenChange();
-      setBusinessLogo("");
-    }
-  }, [state.created, state.business?.id]);
+  // useEffect(() => {
+  //   if (state.created) {
+  //     onOpenChange();
+  //     setBusinessLogo("");
+  //   }
+  // }, [state.created, state.business?.id]);
 
   const handleClientUploadComplete = (res: ClientUploadedFileData<null>[]) => {
     const logoURL = res[0].url;
@@ -72,7 +72,7 @@ export function CreateBusinessModal() {
       >
         <ModalContent>
           {(onClose) => (
-            <form action={formAction}>
+            <form action={createBusiness}>
               <ModalHeader className="flex flex-col gap-1">
                 Create a Business
               </ModalHeader>

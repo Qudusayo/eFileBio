@@ -1,13 +1,68 @@
 "use client";
 
 import { Avatar, Button, Progress } from "@nextui-org/react";
-import { MoveRight } from "lucide-react";
 import { useState } from "react";
 import FormTab from "../../components/form-tab";
 import FormSteps from "./form-steps";
+import { FormikProps, useFormik } from "formik";
+import { fiFormInterface, rcFormInterface, caFormInterface } from "@/types";
+import { formValidation } from "@/utils/validations";
+import { caFormShape } from "./form-shape";
+import { MoveRight } from "lucide-react";
+
+export type iFormType = {
+  fi: fiFormInterface;
+  rc: rcFormInterface;
+  ca: caFormInterface[];
+};
 
 const Form = () => {
   const [activeTab, setActiveTab] = useState(0);
+
+  const formData = useFormik<iFormType>({
+    initialValues: {
+      fi: {
+        filingType: "",
+        legalName: "",
+        taxType: "",
+        taxId: "",
+        taxJurisdiction: "",
+      },
+      rc: {
+        isForeignPooledInvestmentVehicle: false,
+        isRequestingId: false,
+        legalName: "",
+        alternateNames: [],
+        taxType: "",
+        taxId: "",
+        taxJurisdiction: "",
+        jurisdiction: "",
+        domesticState: "",
+        domesticTribalJurisdiction: "",
+        domesticOtherTribe: "",
+        foreignFirstState: "",
+        foreignTribalJurisdiction: "",
+        foreignOtherTribe: "",
+        country: "",
+        address: "",
+        city: "",
+        state: "",
+        zip: "",
+      },
+      ca: [caFormShape],
+    },
+    // validationSchema: formValidation,
+    onSubmit: (values) => {
+      console.log(JSON.stringify(values.ca, null, 2));
+      handleNext();
+    },
+  });
+
+  const handleNext = () => {
+    if (activeTab === 3) return;
+    setActiveTab((currentIndex) => currentIndex + 1);
+  };
+  const handleBack = () => setActiveTab((currentIndex) => currentIndex - 1);
 
   return (
     <div className="flex h-full flex-col">
@@ -35,18 +90,30 @@ const Form = () => {
             </div>
           </div>
         </div>
-        {activeTab === 0 && <FormSteps.FormStep1 />}
-        {activeTab === 1 && <FormSteps.FormStep2 />}
-        {activeTab === 2 && <FormSteps.FormStep3 />}
+        {activeTab === 0 && (
+          <FormSteps.FormStep1 formData={formData as FormikProps<iFormType>} />
+        )}
+        {activeTab === 1 && (
+          <FormSteps.FormStep2 formData={formData as FormikProps<iFormType>} />
+        )}
+        {activeTab === 2 && (
+          <FormSteps.FormStep3 formData={formData as FormikProps<iFormType>} />
+        )}
         {activeTab === 3 && <FormSteps.FormStep4 />}
         <div className="mt-4 flex items-center justify-end gap-4">
-          <Button radius="full">Back</Button>
+          <Button
+            radius="full"
+            onClick={handleBack}
+            isDisabled={activeTab === 0}
+          >
+            Back
+          </Button>
           <Button
             radius="full"
             color="warning"
             endContent={<MoveRight />}
             className="text-white"
-            onClick={() => setActiveTab((currentIndex) => currentIndex + 1)}
+            onClick={formData.submitForm}
           >
             Next
           </Button>
