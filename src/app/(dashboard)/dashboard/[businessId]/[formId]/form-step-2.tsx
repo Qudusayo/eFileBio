@@ -34,53 +34,82 @@ const FormStep2 = ({ formData }: { formData: FormikProps<iFormType> }) => {
 
   const [isUnitedStates, setIsUnitedStates] = useState(false);
   const [isPriorityCountry, setIsPriorityCountry] = useState(false);
+  const [isAdUnitedStates, setIsAdUnitedStates] = useState(false);
+  const [isAdPriorityCountry, setIsAdPriorityCountry] = useState(false);
   const [rcAlternateNameCount, setRcAlternateNameCount] = useState(1);
 
   const location = isPriorityCountry ? "domestic" : "foreign";
 
   const resetValueOnDiff = (field: keyof typeof rcValue) => {
     setFieldValue(`rc[${field}]`, "");
+    setFieldError(`rc[${field}]`, "");
+    setFieldTouched(`rc[${field}]`, false);
   };
 
   useEffect(() => {
     if (rcValue.taxType !== "foreign") {
       resetValueOnDiff("taxJurisdiction");
-      setFieldError("rc.taxJurisdiction", "");
-      setFieldTouched("rc.taxJurisdiction", false);
     }
   }, [rcValue.taxType]);
 
   useEffect(() => {
-    setIsUnitedStates(rcValue.jurisdiction === "US");
-    const isProperCountry = priorityCountries.some(
-      (country) => country.value === rcValue.jurisdiction,
-    );
-    setIsPriorityCountry(isProperCountry);
+    const isUnitedStates = rcValue.jurisdiction === "US";
+    const isPriorityCty = priorityCountries
+      .map((c) => c.value)
+      .includes(rcValue.jurisdiction);
+    setIsUnitedStates(isUnitedStates);
+    setIsPriorityCountry(isPriorityCty);
 
-    if (isPriorityCountry) {
+    if (isUnitedStates || !isPriorityCty) {
+      [
+        "domesticState",
+        "domesticTribalJurisdiction",
+        "domesticOtherTribe",
+        "foreignFirstState",
+        "foreignTribalJurisdiction",
+        "foreignOtherTribe",
+      ].forEach((field) => {
+        resetValueOnDiff(field as keyof typeof rcValue);
+        setFieldError(`rc[${field}]`, "");
+        setFieldTouched(`rc[${field}]`, false);
+      });
+    }
+    if (isPriorityCty && !isUnitedStates) {
       setFieldValue("rc.domesticState", rcValue.jurisdiction);
     }
   }, [rcValue.jurisdiction]);
 
   useEffect(() => {
-    [
-      "domesticState",
-      "domesticTribalJurisdiction",
-      "domesticOtherTribe",
-      "foreignFirstState",
-      "foreignTribalJurisdiction",
-      "foreignOtherTribe",
-    ].forEach((field) => {
-      resetValueOnDiff(field as keyof typeof rcValue);
-      setFieldError(`rc[${field}]`, "");
-      setFieldTouched(`rc[${field}]`, false);
-    });
-  }, [location, isUnitedStates]);
+    const isAdUs = rcValue.country === "US";
+    const isAdPriorityCty = priorityCountries
+      .map((c) => c.value)
+      .includes(rcValue.country);
+    setIsAdUnitedStates(isAdUs);
+    setIsAdPriorityCountry(isAdPriorityCty);
+
+    if (isAdPriorityCty && !isAdUs) {
+      setFieldValue("rc.state", rcValue.country);
+    } else {
+      resetValueOnDiff("state");
+    }
+  }, [rcValue.country]);
 
   useEffect(() => {
     setFieldValue("rc.foreignOtherTribe", "");
     setFieldValue("rc.domesticOtherTribe", "");
   }, [rcValue.domesticTribalJurisdiction, rcValue.foreignTribalJurisdiction]);
+
+  const getStateForJurisdiction = (dependentCountry: string) => {
+    const priorityCountry = priorityCountries.find(
+      (country) => country.value === dependentCountry,
+    );
+
+    if (priorityCountry && dependentCountry !== "US") {
+      return [priorityCountry];
+    } else {
+      return domesticStates;
+    }
+  };
 
   return (
     <form onSubmit={formData.handleSubmit}>
@@ -227,18 +256,10 @@ const FormStep2 = ({ formData }: { formData: FormikProps<iFormType> }) => {
             <FormSelect
               name="rc.domesticState"
               label="State of formation"
-              listContent={
-                isUnitedStates
-                  ? domesticStates
-                  : ([
-                      priorityCountries.find(
-                        (country) => country.value === rcValue.jurisdiction,
-                      ),
-                    ] as { label: string; value: string }[])
-              }
+              listContent={getStateForJurisdiction(rcValue.jurisdiction)}
               selectedKey={rcValue.domesticState}
               isDisabled={
-                (!isUnitedStates && isPriorityCountry && false) ||
+                (!isUnitedStates && isPriorityCountry) ||
                 (!!rcValue.domesticTribalJurisdiction && isUnitedStates)
               }
               setFieldValue={setFieldValue}
@@ -363,7 +384,7 @@ const FormStep2 = ({ formData }: { formData: FormikProps<iFormType> }) => {
             errorMessage={rcTouched?.city && rcError?.city}
           />
           <FormSelect
-            listContent={domesticStates}
+            listContent={getStateForJurisdiction(rcValue.country)}
             label="State"
             name="rc.state"
             selectedKey={rcValue.state}
@@ -372,6 +393,7 @@ const FormStep2 = ({ formData }: { formData: FormikProps<iFormType> }) => {
             onBlur={handleBlur}
             isInvalid={rcTouched?.state && !!rcError?.state}
             errorMessage={rcTouched?.state && rcError?.state}
+            isDisabled={!isAdUnitedStates && isAdPriorityCountry}
           />
           <FormInput
             label="Zip Code"

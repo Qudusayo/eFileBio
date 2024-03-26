@@ -7,7 +7,7 @@ import clsx from "clsx";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const params = useParams();
 
-  const isFormPage = Object.keys(params)[1] === "form";
+  const isFormPage = Object.keys(params)[1] === "formId";
 
   return (
     <div className="flex h-full flex-col gap-4">

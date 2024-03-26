@@ -1,22 +1,21 @@
 "use client";
 
-import FormDate from "@/components/form-date";
 import FormInput from "@/components/form-input";
 import FormSelect from "@/components/form-select";
 import RadioCheckbox from "@/components/radio-checkbox";
 import { foreignCountries, taxIdentificationTypes } from "@/utils/constants";
 import { Divider } from "@nextui-org/react";
 import { FormikProps } from "formik";
-import {
-  BookAudio,
-  BriefcaseBusiness,
-  CalendarDays,
-  Earth,
-} from "lucide-react";
 import { useEffect } from "react";
 import { iFormType } from "./page";
 
-const FormStep1 = ({ formData }: { formData: FormikProps<iFormType> }) => {
+const FormStep1 = ({
+  formData,
+  datePrepared,
+}: {
+  formData: FormikProps<iFormType>;
+  datePrepared: Date;
+}) => {
   const { values, touched, errors, getFieldProps, setFieldValue, handleBlur } =
     formData;
   const { fi: fiValue } = values;
@@ -43,19 +42,14 @@ const FormStep1 = ({ formData }: { formData: FormikProps<iFormType> }) => {
         formData.setFieldError(`fi[${field}]`, "");
       });
     }
-    if (fiValue.filingType === "NEW_EXEMPT") {
-      formData.setFieldValue("fi.filingType", "NEW_EXEMPT");
-    }
+    // if (fiValue.filingType === "NEW_EXEMPT") {
+    //   formData.setFieldValue("fi.filingType", "NEW_EXEMPT");
+    // }
   }, [fiValue.filingType]);
 
   return (
     <form onSubmit={formData.handleSubmit}>
-      <div className="grid grid-cols-2 gap-6 py-6">
-        <FormInput
-          label="Business Name"
-          placeholder="Golden Gate Capital LLC"
-          startContent={<BriefcaseBusiness />}
-        />
+      {/* <div className="grid grid-cols-2 gap-6 py-6">
         <FormDate
           label={<span className="text-sm">Business Creation Date</span>}
           placeholder={`01/01/${new Date().getFullYear()}`}
@@ -66,19 +60,13 @@ const FormStep1 = ({ formData }: { formData: FormikProps<iFormType> }) => {
         />
         <FormSelect
           listContent={[]}
-          label="Domestic or Foreign Entity"
-          placeholder="Domestic"
-          startContent={<Earth />}
-        />
-        <FormSelect
-          listContent={[]}
           label="Entity Type"
           placeholder="Securities reporting issuer"
           startContent={<BookAudio />}
         />
-      </div>
+      </div> */}
 
-      <div className="space-y-6 py-6 pt-0">
+      <div className="space-y-6 py-6">
         <div>
           <h2 className="text-xl font-semibold">Filing Information</h2>
           <p className="text-sm">
@@ -110,7 +98,7 @@ const FormStep1 = ({ formData }: { formData: FormikProps<iFormType> }) => {
           <FormInput
             name="datePrepared"
             label="Date prepared (auto filled)"
-            value={new Date().toLocaleDateString()}
+            value={datePrepared.toLocaleDateString()}
             disabled
           />
         </div>

@@ -27,10 +27,10 @@ const foreignCountries = countries.filter(
 
 const sortedCountries = [...priorityCountries, ...foreignCountries];
 
-const usStates = State.getStatesOfCountry("US").map((state) => ({
-  value: state.isoCode,
-  label: state.name,
-}));
+// const usStates = State.getStatesOfCountry("US").map((state) => ({
+//   value: state.isoCode,
+//   label: state.name,
+// }));
 
 const identifyingDocumentTypes = [
   { value: "37", label: "State issued driver's license" },
@@ -46,7 +46,7 @@ const taxIdentificationTypes = [
 ];
 
 export {
-  usStates,
+  // usStates,
   foreignStates,
   domesticStates,
   sortedCountries,

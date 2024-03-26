@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 
 const AuthButton = ({ type }: { type: "mininal" | "large" }) => {
   const { push } = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const handleSignIn = () => {
     if (session) {
@@ -28,8 +28,10 @@ const AuthButton = ({ type }: { type: "mininal" | "large" }) => {
       size={type === "mininal" ? "md" : "lg"}
       className={clsx("text-black", type === "large" ? "mx-auto min-w-52" : "")}
       onClick={handleSignIn}
+      isLoading={status === "loading"}
+      isDisabled={status === "loading"}
     >
-      {!session && <Icons.Google className="h-6 w-6" />}
+      {!session && status !== "loading" && <Icons.Google className="h-6 w-6" />}
       {type === "large" ? (
         <span>{session ? "Go to Dashboard" : "Continue with Google"}</span>
       ) : (

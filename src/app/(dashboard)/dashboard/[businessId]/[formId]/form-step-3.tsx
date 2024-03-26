@@ -3,12 +3,12 @@ import FormInput from "@/components/form-input";
 import FormSelect from "@/components/form-select";
 import RadioCheckbox from "@/components/radio-checkbox";
 import {
-  foreignCountries,
   identifyingDocumentTypes,
   priorityCountries,
   sortedCountries,
-  usStates,
   tribalJurisdiction,
+  domesticStates,
+  foreignCountries,
 } from "@/utils/constants";
 import {
   Accordion,
@@ -19,7 +19,7 @@ import {
 } from "@nextui-org/react";
 import clsx from "clsx";
 import { FormikErrors, FormikProps } from "formik";
-import { Minus, MoveRight, Plus, Trash2 } from "lucide-react";
+import { Minus, Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { caFormShape } from "./form-shape";
 import { iFormType } from "./page";
@@ -91,6 +91,7 @@ const SectionForm = ({
 }) => {
   const [isUnitedStates, setIsUnitedStates] = useState(false);
   const [isPriorityCountry, setIsPriorityCountry] = useState(false);
+  const [isPriorityJurisdiction, setIsPriorityJurisdiction] = useState(false);
 
   const {
     values,
@@ -102,22 +103,81 @@ const SectionForm = ({
     setFieldError,
     setFieldTouched,
   } = formData;
-  const { ca: caValue } = values;
-  const { ca: caTouched } = touched;
+  const { ca: value } = values;
+  const { ca: touch } = touched;
   const { ca: error } = errors;
 
+  const caValue = value[level];
+  const caTouched = touch?.[level];
   const caError = (error?.[level] || {}) as FormikErrors<caFormInterface>;
 
   useEffect(() => {
-    setIsUnitedStates(caValue[level].identification.jurisdiction === "US");
+    setFieldValue(`ca.${level}.identification.state`, "");
+    setFieldValue(`ca.${level}.identification.otherTribe`, "");
+    setFieldValue(`ca.${level}.identification.localTribal`, "");
+
     const isPriorityCty = priorityCountries.some(
-      (country) => country.value === caValue[level].identification.jurisdiction,
+      (country) => country.value === caValue.identification.jurisdiction,
+    );
+    setIsPriorityJurisdiction(isPriorityCty);
+    if (isPriorityCty) {
+      setFieldValue(
+        `ca.${level}.identification.state`,
+        caValue.identification.jurisdiction,
+      );
+    } else {
+      setFieldValue(`ca.${level}.identification.state`, "");
+    }
+  }, [caValue.identification.jurisdiction]);
+
+  useEffect(() => {
+    const isUnitedStates = caValue.country === "US";
+    const isPriorityCty = priorityCountries.some(
+      (country) => country.value === caValue.country,
     );
     setIsPriorityCountry(isPriorityCty);
-    if (!isPriorityCty) {
+    setIsUnitedStates(isUnitedStates);
+
+    if (isPriorityCty && !isUnitedStates) {
+      setFieldValue(`ca.${level}.state`, caValue.country);
+    } else {
       setFieldValue(`ca.${level}.state`, "");
     }
-  }, [caValue[level].identification.jurisdiction]);
+  }, [caValue.country]);
+
+  useEffect(() => {
+    if (caValue.identification.type === "39") {
+      setFieldValue(`ca.${level}.identification.jurisdiction`, "US");
+    } else {
+      setFieldValue(`ca.${level}.identification.jurisdiction`, "");
+    }
+  }, [caValue.identification.type]);
+
+  const getStateForCountry = (dependentCountry: string) => {
+    const priorityCountry = priorityCountries.find(
+      (country) => country.value === dependentCountry,
+    );
+
+    if (priorityCountry && dependentCountry !== "US") {
+      return [priorityCountry];
+    } else {
+      return domesticStates;
+    }
+  };
+
+  const getCountryForJurisdiction = () => {
+    const type = caValue.identification.type;
+
+    if (["37", "38"].includes(type)) {
+      return priorityCountries;
+    } else if (type === "39") {
+      return [{ value: "US", label: "United States of America" }];
+    } else if (type === "40") {
+      return foreignCountries;
+    } else {
+      return sortedCountries;
+    }
+  };
 
   return (
     <Accordion defaultExpandedKeys={["0"]} isCompact hideIndicator>
@@ -156,6 +216,7 @@ const SectionForm = ({
             </div>
           </div>
         }
+        classNames={{ content: "overflow-hidden" }}
       >
         <div className="space-y-6 py-6">
           <h2 className="font-semibold">Company Applicant FinCEN ID:</h2>
@@ -174,8 +235,8 @@ const SectionForm = ({
               label="First name"
               isRequired
               {...getFieldProps(`ca.${level}.firstName`)}
-              isInvalid={caTouched?.[level]?.firstName && !!caError?.firstName}
-              errorMessage={caTouched?.[level]?.firstName && caError?.firstName}
+              isInvalid={caTouched?.firstName && !!caError?.firstName}
+              errorMessage={caTouched?.firstName && caError?.firstName}
             />
             <FormInput
               label="Middle name"
@@ -185,8 +246,8 @@ const SectionForm = ({
               label="Individual's last name"
               isRequired
               {...getFieldProps(`ca.${level}.lastName`)}
-              isInvalid={caTouched?.[level]?.lastName && !!caError?.lastName}
-              errorMessage={caTouched?.[level]?.lastName && caError?.lastName}
+              isInvalid={caTouched?.lastName && !!caError?.lastName}
+              errorMessage={caTouched?.lastName && caError?.lastName}
             />
           </div>
           <div className="grid grid-cols-2 gap-6">
@@ -197,8 +258,8 @@ const SectionForm = ({
               isRequired
               setFieldValue={setFieldValue}
               {...getFieldProps(`ca.${level}.dob`)}
-              isInvalid={caTouched?.[level]?.dob && !!caError?.dob}
-              errorMessage={caTouched?.[level]?.dob && caError?.dob}
+              isInvalid={caTouched?.dob && !!caError?.dob}
+              errorMessage={caTouched?.dob && caError?.dob}
             />
           </div>
         </div>
@@ -215,15 +276,11 @@ const SectionForm = ({
                 { label: "Business address", value: "BUSINESS" },
                 { label: "Residential address", value: "RESIDENTIAL" },
               ]}
-              selectedValue={caValue[level].addressType}
+              selectedValue={caValue.addressType}
               setFieldValue={setFieldValue}
               onBlur={handleBlur}
-              isInvalid={
-                caTouched?.[level]?.addressType && !!caError?.addressType
-              }
-              errorMessage={
-                caTouched?.[level]?.addressType && caError?.addressType
-              }
+              isInvalid={caTouched?.addressType && !!caError?.addressType}
+              errorMessage={caTouched?.addressType && caError?.addressType}
             />
           </div>
           <div className="grid grid-cols-2 gap-6">
@@ -232,18 +289,18 @@ const SectionForm = ({
               label="Country/Jurisdiction"
               isRequired
               name={`ca.${level}.country`}
-              selectedKey={caValue[level].country}
+              selectedKey={caValue.country}
               setFieldValue={setFieldValue}
               onBlur={handleBlur}
-              isInvalid={caTouched?.[level]?.country && !!caError?.country}
-              errorMessage={caTouched?.[level]?.country && caError?.country}
+              isInvalid={caTouched?.country && !!caError?.country}
+              errorMessage={caTouched?.country && caError?.country}
             />
             <FormInput
               label="Address (number, street, and apt. or suite no.)"
               isRequired
               {...getFieldProps(`ca.${level}.address`)}
-              isInvalid={caTouched?.[level]?.address && !!caError?.address}
-              errorMessage={caTouched?.[level]?.address && caError?.address}
+              isInvalid={caTouched?.address && !!caError?.address}
+              errorMessage={caTouched?.address && caError?.address}
             />
           </div>
           <div className="grid grid-cols-3 gap-6">
@@ -251,27 +308,27 @@ const SectionForm = ({
               label="City"
               isRequired
               {...getFieldProps(`ca.${level}.city`)}
-              isInvalid={caTouched?.[level]?.city && !!caError?.city}
-              errorMessage={caTouched?.[level]?.city && caError?.city}
+              isInvalid={caTouched?.city && !!caError?.city}
+              errorMessage={caTouched?.city && caError?.city}
             />
             <FormSelect
-              listContent={usStates}
+              listContent={getStateForCountry(caValue.country)}
               label="State"
               isRequired
               name={`ca.${level}.state`}
-              selectedKey={caValue[level].state}
+              selectedKey={caValue.state}
               setFieldValue={setFieldValue}
               onBlur={handleBlur}
-              isInvalid={caTouched?.[level]?.state && !!caError?.state}
-              errorMessage={caTouched?.[level]?.state && caError?.state}
-              isDisabled={!isPriorityCountry}
+              isInvalid={caTouched?.state && !!caError?.state}
+              errorMessage={caTouched?.state && caError?.state}
+              isDisabled={!isUnitedStates && !!caValue.country}
             />
             <FormInput
               label="ZIP/Foreign postal code*"
               isRequired
               {...getFieldProps(`ca.${level}.zip`)}
-              isInvalid={caTouched?.[level]?.zip && !!caError?.zip}
-              errorMessage={caTouched?.[level]?.zip && caError?.zip}
+              isInvalid={caTouched?.zip && !!caError?.zip}
+              errorMessage={caTouched?.zip && caError?.zip}
             />
           </div>
         </div>
@@ -286,16 +343,15 @@ const SectionForm = ({
               label="Identifying document type"
               name={`ca.${level}.identification.type`}
               isRequired
-              selectedKey={caValue[level].identification.type}
+              selectedKey={caValue.identification.type}
               setFieldValue={setFieldValue}
               onBlur={handleBlur}
               isInvalid={
-                caTouched?.[level]?.identification?.type &&
+                caTouched?.identification?.type &&
                 !!caError?.identification?.type
               }
               errorMessage={
-                caTouched?.[level]?.identification?.type &&
-                caError?.identification?.type
+                caTouched?.identification?.type && caError?.identification?.type
               }
             />
             <FormInput
@@ -303,12 +359,10 @@ const SectionForm = ({
               isRequired
               {...getFieldProps(`ca.${level}.identification.id`)}
               isInvalid={
-                caTouched?.[level]?.identification?.id &&
-                !!caError?.identification?.id
+                caTouched?.identification?.id && !!caError?.identification?.id
               }
               errorMessage={
-                caTouched?.[level]?.identification?.id &&
-                caError?.identification?.id
+                caTouched?.identification?.id && caError?.identification?.id
               }
             />
           </div>{" "}
@@ -318,29 +372,47 @@ const SectionForm = ({
           </h2>
           <div className="grid grid-cols-2 gap-6">
             <FormSelect
-              listContent={
-                ["37", "38"].includes(caValue[level].identification.type)
-                  ? priorityCountries
-                  : caValue[level].identification.type === "39"
-                    ? [{ value: "US", label: "United States of America" }]
-                    : foreignCountries
-              }
+              listContent={getCountryForJurisdiction()}
               label="Country/Jurisdiction"
               isRequired
               name={`ca.${level}.identification.jurisdiction`}
-              selectedKey={caValue[level].identification.jurisdiction}
+              selectedKey={caValue.identification.jurisdiction}
               setFieldValue={setFieldValue}
+              isInvalid={
+                caTouched?.identification?.jurisdiction &&
+                !!caError?.identification?.jurisdiction
+              }
+              errorMessage={
+                caTouched?.identification?.jurisdiction &&
+                caError?.identification?.jurisdiction
+              }
+              isDisabled={
+                caValue.identification.jurisdiction === "US" &&
+                caValue.identification.type === "39"
+              }
             />
             <FormSelect
-              listContent={usStates}
+              listContent={getStateForCountry(
+                caValue.identification.jurisdiction,
+              )}
               label="State"
               isRequired
               name={`ca.${level}.identification.state`}
-              selectedKey={caValue[level].identification.state}
+              selectedKey={caValue.identification.state}
               setFieldValue={setFieldValue}
               isDisabled={
-                !["37", "38"].includes(caValue[level].identification.type) ||
-                !!caValue[level].identification.localTribal
+                !["37", "38"].includes(caValue.identification.type) ||
+                !!caValue.identification.localTribal ||
+                (isPriorityJurisdiction &&
+                  caValue.identification.jurisdiction !== "US")
+              }
+              isInvalid={
+                caTouched?.identification?.state &&
+                !!caError?.identification?.state
+              }
+              errorMessage={
+                caTouched?.identification?.state &&
+                caError?.identification?.state
               }
             />
           </div>
@@ -350,18 +422,34 @@ const SectionForm = ({
               label="Local/Tribal"
               isRequired
               name={`ca.${level}.identification.localTribal`}
-              isDisabled={
-                caValue[level].identification.type !== "38" ||
-                !!caValue[level].identification.state
-              }
-              selectedKey={caValue[level].identification.localTribal}
+              selectedKey={caValue.identification.localTribal}
               setFieldValue={setFieldValue}
+              isDisabled={
+                caValue.identification.type !== "38" ||
+                !!caValue.identification.state
+              }
+              isInvalid={
+                caTouched?.identification?.localTribal &&
+                !!caError?.identification?.localTribal
+              }
+              errorMessage={
+                caTouched?.identification?.localTribal &&
+                caError?.identification?.localTribal
+              }
             />
             <FormInput
               label="Other local/Tribal description"
               isRequired
               {...getFieldProps(`ca.${level}.identification.otherTribe`)}
-              isDisabled={caValue[level].identification.localTribal !== "Other"}
+              isDisabled={caValue.identification.localTribal !== "Other"}
+              isInvalid={
+                caTouched?.identification?.otherTribe &&
+                !!caError?.identification?.otherTribe
+              }
+              errorMessage={
+                caTouched?.identification?.otherTribe &&
+                caError?.identification?.otherTribe
+              }
             />
           </div>
         </div>

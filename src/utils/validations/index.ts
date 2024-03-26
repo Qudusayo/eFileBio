@@ -8,6 +8,7 @@ import formStep4Validation from "./form-step-4";
 const formValidation = Yup.object().shape({
   fi: formStep1Validation,
   rc: formStep2Validation,
+  ca: formStep3Validation,
 });
 
-export { formStep3Validation, formStep4Validation, formValidation };
+export { formStep4Validation, formValidation };

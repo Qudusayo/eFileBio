@@ -1,9 +1,9 @@
 import FormInput from "@/components/form-input";
 import FormSelect from "@/components/form-select";
 import {
+  domesticStates,
   identifyingDocumentTypes,
   sortedCountries,
-  usStates,
 } from "@/utils/constants";
 import { tribalJurisdiction } from "@/utils/tribalJurisdiction";
 import { Button, Checkbox, Divider } from "@nextui-org/react";
@@ -108,7 +108,7 @@ const FormStep4 = ({}: {}) => {
         </div>
         <div className="grid grid-cols-3 gap-6">
           <FormInput label="City" isRequired />
-          <FormSelect listContent={usStates} label="State" isRequired />
+          <FormSelect listContent={domesticStates} label="State" isRequired />
           <FormInput label="ZIP/Foreign postal code" isRequired />
         </div>
       </div>
@@ -135,7 +135,7 @@ const FormStep4 = ({}: {}) => {
             label="Country/Jurisdiction"
             isRequired
           />
-          <FormSelect listContent={usStates} label="State" isRequired />
+          <FormSelect listContent={domesticStates} label="State" isRequired />
         </div>
         <div className="grid grid-cols-2 gap-6">
           <FormSelect
