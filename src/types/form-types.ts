@@ -49,3 +49,8 @@ export interface caFormInterface {
     otherTribe: string;
   };
 }
+
+export interface boFormInterface extends Omit<caFormInterface, "addressType"> {
+  isParentGuardianInformation: boolean;
+  isExemptEntity: boolean;
+}

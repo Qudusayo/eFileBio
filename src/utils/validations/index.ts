@@ -9,6 +9,7 @@ const formValidation = Yup.object().shape({
   fi: formStep1Validation,
   rc: formStep2Validation,
   ca: formStep3Validation,
+  bo: formStep4Validation,
 });
 
-export { formStep4Validation, formValidation };
+export { formValidation };

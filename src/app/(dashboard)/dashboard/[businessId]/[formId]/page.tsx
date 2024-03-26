@@ -7,14 +7,16 @@ import FormSteps from "./form-steps";
 import { FormikProps, useFormik } from "formik";
 import { fiFormInterface, rcFormInterface, caFormInterface } from "@/types";
 import { formValidation } from "@/utils/validations";
-import { caFormShape } from "./form-shape";
+import { boFormShape, caFormShape } from "./form-shape";
 import { ArrowLeft, MoveRight } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
+import { boFormInterface } from "@/types/form-types";
 
 export type iFormType = {
   fi: fiFormInterface;
   rc: rcFormInterface;
   ca: caFormInterface[];
+  bo: boFormInterface[];
 };
 
 const Form = () => {
@@ -55,6 +57,7 @@ const Form = () => {
         zip: "",
       },
       ca: [caFormShape],
+      bo: [boFormShape],
     },
     validationSchema: formValidation,
     onSubmit: (values) => {
@@ -154,7 +157,11 @@ const Form = () => {
               formData={formData as FormikProps<iFormType>}
             />
           )}
-          {activeTab === 3 && <FormSteps.FormStep4 />}
+          {activeTab === 3 && (
+            <FormSteps.FormStep4
+              formData={formData as FormikProps<iFormType>}
+            />
+          )}
         </div>
         <div className="mt-4 flex items-center justify-end gap-4">
           <Button

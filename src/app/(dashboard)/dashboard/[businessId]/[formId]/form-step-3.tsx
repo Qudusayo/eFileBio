@@ -58,20 +58,6 @@ const FormStep3 = ({ formData }: { formData: FormikProps<iFormType> }) => {
           handleAddSection={handleAddSection}
         />
       ))}
-      <div className="mt-4 flex items-center justify-end gap-4">
-        {/* <Button radius="full" onClick={handleBack}>
-          Back
-        </Button>
-        <Button
-          radius="full"
-          color="warning"
-          endContent={<MoveRight />}
-          className="text-white"
-          onClick={submitForm}
-        >
-          Next
-        </Button> */}
-      </div>
     </form>
   );
 };
@@ -129,6 +115,13 @@ const SectionForm = ({
       setFieldValue(`ca.${level}.identification.state`, "");
     }
   }, [caValue.identification.jurisdiction]);
+
+  useEffect(() => {
+    setFieldValue(`ca.${level}.identification.state`, "");
+    setFieldValue(`ca.${level}.identification.jurisdiction`, "");
+    setFieldValue(`ca.${level}.identification.otherTribe`, "");
+    setFieldValue(`ca.${level}.identification.localTribal`, "");
+  }, [caValue.identification.type]);
 
   useEffect(() => {
     const isUnitedStates = caValue.country === "US";
@@ -401,7 +394,8 @@ const SectionForm = ({
               selectedKey={caValue.identification.state}
               setFieldValue={setFieldValue}
               isDisabled={
-                !["37", "38"].includes(caValue.identification.type) ||
+                (!!caValue.identification.jurisdiction &&
+                  !["37", "38"].includes(caValue.identification.type)) ||
                 !!caValue.identification.localTribal ||
                 (isPriorityJurisdiction &&
                   caValue.identification.jurisdiction !== "US")
